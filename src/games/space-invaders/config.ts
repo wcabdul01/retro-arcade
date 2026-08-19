@@ -1,0 +1,40 @@
+import { GB } from "../../config/AppConfig";
+
+export const FLEET = {
+  ROWS: 5,
+  COLS: 8,
+  CELL_W: 45,
+  CELL_H: 34,
+  TOP_OFFSET: 20,
+  STEP_DOWN: 16,
+  STEP_X: 8,
+  MIN_STEP_MS: 200,
+  MAX_STEP_MS: 700,
+};
+
+export const PLAYER = {
+  WIDTH: 45,
+  HEIGHT: 18,
+  Y_OFFSET: 30,
+};
+
+export const BULLET = {
+  WIDTH: 4,
+  HEIGHT: 14,
+  PLAYER_SPEED: 480,
+  INVADER_SPEED: 220,
+  PLAYER_COOLDOWN_MS: 350,
+  INVADER_FIRE_INTERVAL_MS: 900,
+  MAX_INVADER_BULLETS: 3,
+};
+
+export const SI_COLORS = {
+  PLAYER: GB.DARKEST,
+  BULLET_PLAYER: GB.DARKEST,
+  BULLET_INVADER: GB.DARKEST,
+  ROWS: [GB.DARK, GB.DARKEST, GB.DARK, GB.DARKEST, GB.DARK],
+};
+
+export const GAMEPLAY = {
+  START_LIVES: 3,
+};

@@ -1,0 +1,27 @@
+{
+  "name": "retro-arcade",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "cap:sync": "npm run build && npx cap sync"
+  },
+  "dependencies": {
+    "@capacitor-community/admob": "^6.2.0",
+    "@capacitor/app": "^6.0.1",
+    "@capacitor/core": "^6.1.2",
+    "@capacitor/haptics": "^6.0.1",
+    "@capacitor/preferences": "^6.0.2",
+    "phaser": "^3.80.1"
+  },
+  "devDependencies": {
+    "@capacitor/android": "^6.1.2",
+    "@capacitor/cli": "^6.1.2",
+    "@capacitor/ios": "^6.1.2",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.1"
+  }
+}
