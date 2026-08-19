@@ -34,12 +34,12 @@ export class BootScene extends Phaser.Scene {
     await adapter.notifyReady();
     this.scene.launch("Overlay");
 
-    // Free (non-purchased) play requires a connection so ads can load;
-    // the ad-free purchase also unlocks fully offline play.
-    if (!saveData.noAdsPurchased && !navigator.onLine) {
-      this.scene.start("OfflineBlock");
-    } else {
-      this.scene.start("Hub");
-    }
+    // The offline gate (OfflineBlockScene) previously required a connection
+    // for free play, with the "Remove Ads" purchase as the only unlock path.
+    // That purchase is disabled for v1 (see SettingsScene) — routing here
+    // would strand offline players with no way back in, so offline play is
+    // allowed for everyone until real billing ships and this can be
+    // re-wired to OfflineBlockScene properly.
+    this.scene.start("Hub");
   }
 }

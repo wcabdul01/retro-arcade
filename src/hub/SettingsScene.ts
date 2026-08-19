@@ -5,8 +5,6 @@ import { Settings } from "../systems/Settings";
 import { sfx } from "../systems/SoundManager";
 import { vibrate } from "../systems/Haptics";
 import { ImpactStyle } from "@capacitor/haptics";
-import { Purchases } from "../systems/Purchases";
-import type { SaveData } from "../platform";
 
 export class SettingsScene extends Phaser.Scene {
   constructor() {
@@ -42,53 +40,14 @@ export class SettingsScene extends Phaser.Scene {
 
     this.createCycleControl(centerY + 15, "CONTRAST", () => `${Settings.contrastPercent}%`, () => Settings.cycleContrast());
 
-    this.createPurchaseRow(centerY + 85);
+    // "Remove Ads" purchase row intentionally omitted for v1 launch — it was
+    // wired to a placeholder (Purchases.buyNoAds) that granted the
+    // entitlement for free with no real payment. Re-add once real Google
+    // Play Billing is implemented (see Purchases.ts).
 
-    createButton(this, GAME_WIDTH / 2, centerY + 155, "BACK", () => {
+    createButton(this, GAME_WIDTH / 2, centerY + 85, "BACK", () => {
       this.scene.stop();
     });
-  }
-
-  private createPurchaseRow(y: number): void {
-    const width = 260;
-    const height = 56;
-    const isOwned = (): boolean => (this.registry.get("saveData") as SaveData | undefined)?.noAdsPurchased ?? false;
-
-    const bg = this.add.rectangle(GAME_WIDTH / 2, y, width, height, GB.DARK).setStrokeStyle(4, GB.DARKEST);
-    const text = this.add
-      .text(GAME_WIDTH / 2, y, "", {
-        fontFamily: FONT_FAMILY,
-        fontSize: "10px",
-        color: "#9ba17c",
-        align: "center",
-      })
-      .setOrigin(0.5);
-
-    const refresh = (): void => {
-      if (isOwned()) {
-        text.setText("AD-FREE: PURCHASED");
-        bg.disableInteractive();
-        bg.setFillStyle(GB.DARK);
-      } else {
-        text.setText("REMOVE ADS - $10\n(TEST MODE)");
-        bg.setInteractive({ useHandCursor: true });
-      }
-    };
-
-    bg.on("pointerover", () => {
-      if (!isOwned()) bg.setFillStyle(GB.DARKEST);
-    });
-    bg.on("pointerout", () => {
-      if (!isOwned()) bg.setFillStyle(GB.DARK);
-    });
-    bg.on("pointerdown", async () => {
-      if (isOwned()) return;
-      sfx.select();
-      await Purchases.buyNoAds(this);
-      refresh();
-    });
-
-    refresh();
   }
 
   private createToggle(y: number, label: string, getValue: () => boolean, onToggle: () => void): void {
