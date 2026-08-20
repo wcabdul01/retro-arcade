@@ -1,6 +1,11 @@
 import { GB } from "../../config/AppConfig";
 
-export const COLS = 20;
+// COLS * CELL should fill PLAYFIELD_WIDTH (420) as closely as possible —
+// any gap here is dead space between the drawn frame and the actual grid
+// where the snake collides with an invisible boundary before it looks like
+// it's reached the wall. 22 * 19 = 418 (1px slack per side); the previous
+// COLS=20 left a very noticeable 20px gap on each side.
+export const COLS = 22;
 export const ROWS = 36;
 export const CELL = 19;
 
