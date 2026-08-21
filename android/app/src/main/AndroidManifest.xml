@@ -35,7 +35,15 @@
                 android:resource="@xml/file_paths"></meta-data>
         </provider>
 
-        <!-- AdMob App ID: Google's official test App ID. Replace with your real App ID before publishing. -->
+        <!-- AdMob App ID: Google's official test App ID. Ads are disabled for
+             this build (see src/systems/AdsManager.ts) since AdMob is
+             temporarily unavailable and mediation is moving to AppLovin MAX.
+             Left in place, not removed: the bundled Google Mobile Ads SDK
+             AAR has its own startup-time provider that expects this
+             meta-data to exist regardless of whether the app ever calls
+             AdMob.initialize() — removing it risks a boot crash, not just an
+             inert unused value. Safe to actually remove once the AdMob
+             dependency itself is fully replaced by AppLovin. -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-3940256099942544~3347511713" />
@@ -44,5 +52,8 @@
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
+    <!-- AD_ID intentionally not declared: ads are disabled for this build
+         (see AdsManager.ts), so this app does not currently use the
+         advertising ID. Re-add once AppLovin is wired in and actually
+         serving ads. -->
 </manifest>

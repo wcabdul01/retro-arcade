@@ -15,6 +15,17 @@ const TEST_INTERSTITIAL_ID = "ca-app-pub-3940256099942544/1033173712";
 
 const INTERSTITIAL_MIN_INTERVAL_MS = 60_000;
 
+// The AdMob account this app was going to use is currently unavailable, and
+// the plan is to switch mediation to AppLovin MAX instead (needs a custom
+// native Capacitor plugin — no ready-made one exists — planned as a
+// fast-follow, not rushed into this launch). Until that's built, ads are
+// fully disabled here rather than left pointing at a dead AdMob account:
+// every method below already has a correct "ads unavailable" fallback path
+// (onUnavailable/onDone still fire), since that's the same path used when
+// ads aren't supported on a given platform — so this is a single safe gate,
+// not a change to any call site's behavior contract.
+const ADS_DISABLED = true;
+
 class AdsManagerImpl {
   private ready = false;
   private initializing: Promise<void> | null = null;
@@ -23,7 +34,7 @@ class AdsManagerImpl {
   private adFree = false;
 
   private get isSupported(): boolean {
-    return Capacitor.isNativePlatform() && !this.adFree;
+    return !ADS_DISABLED && Capacitor.isNativePlatform() && !this.adFree;
   }
 
   /** Set once at boot from the purchased "remove ads" entitlement. When true,
