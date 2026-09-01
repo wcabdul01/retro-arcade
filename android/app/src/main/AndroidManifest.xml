@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <application
         android:allowBackup="true"
@@ -52,8 +53,17 @@
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <!-- AD_ID intentionally not declared: ads are disabled for this build
-         (see AdsManager.ts), so this app does not currently use the
-         advertising ID. Re-add once AppLovin is wired in and actually
+    <!-- Ads are disabled for this build (see AdsManager.ts), so this app
+         does not currently use the advertising ID. The bundled Google
+         Mobile Ads SDK declares these permissions in its own library
+         manifest, so Gradle's manifest merger re-adds them by default even
+         though we don't want them here — confirmed by inspecting the
+         actual merged manifest in app/build/intermediates/. The
+         tools:node="remove" directives below are required, not decorative:
+         omitting a permission from this file alone does NOT remove it from
+         the compiled app when a dependency's manifest declares it. Re-add
+         (and drop these overrides) once AppLovin is wired in and actually
          serving ads. -->
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" />
+    <uses-permission android:name="android.permission.ACCESS_ADSERVICES_AD_ID" tools:node="remove" />
 </manifest>
