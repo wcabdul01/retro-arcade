@@ -34,8 +34,8 @@ android {
         applicationId "com.retroarcade.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders = [applovinSdkKey: appLovinSdkKey]
         buildConfigField "String", "APPLOVIN_SDK_KEY", "\"${appLovinSdkKey}\""
