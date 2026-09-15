@@ -36,6 +36,7 @@ android/.idea/
 *.jks
 !debug.keystore
 keystore.properties
+applovin.properties
 
 # iOS
 ios/App/Pods/

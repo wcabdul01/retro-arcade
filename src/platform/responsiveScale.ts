@@ -7,6 +7,14 @@ import { GAME_WIDTH, GAME_HEIGHT } from "../config/AppConfig";
  * content is handled separately, in-game, by insetting each scene's own
  * layout (see CONTENT_MARGIN in ui/safeArea.ts) — not by shrinking or
  * repositioning the canvas itself.
+ *
+ * That edge-to-edge "cover" fit only makes sense against a portrait,
+ * phone-shaped viewport (the actual target). Against a landscape/desktop
+ * window — a completely different aspect ratio than the game's own
+ * 480x1040 portrait canvas — "cover" blows the canvas up several times
+ * over with most of it off-screen. So cover is used only when the
+ * viewport itself is portrait; a landscape viewport gets "contain"
+ * (letterboxed, nothing off-screen) instead.
  */
 export function applyResponsiveScale(game: Phaser.Game): void {
   const layout = (): void => {
@@ -16,7 +24,10 @@ export function applyResponsiveScale(game: Phaser.Game): void {
     const screenW = window.innerWidth;
     const screenH = window.innerHeight;
 
-    const scale = Math.max(screenW / GAME_WIDTH, screenH / GAME_HEIGHT);
+    const isPortraitViewport = screenH >= screenW;
+    const scale = isPortraitViewport
+      ? Math.max(screenW / GAME_WIDTH, screenH / GAME_HEIGHT)
+      : Math.min(screenW / GAME_WIDTH, screenH / GAME_HEIGHT);
 
     const displayW = GAME_WIDTH * scale;
     const displayH = GAME_HEIGHT * scale;

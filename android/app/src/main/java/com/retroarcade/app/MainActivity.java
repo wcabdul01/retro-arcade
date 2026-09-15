@@ -13,6 +13,9 @@ import com.getcapacitor.BridgeActivity;
 public class MainActivity extends BridgeActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Must run before super.onCreate() -- Capacitor builds its plugin
+        // registry during Bridge init, which happens inside onCreate().
+        registerPlugin(AppLovinPlugin.class);
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         hideSystemBars();

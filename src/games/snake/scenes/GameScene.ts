@@ -8,21 +8,17 @@ import { DPAD_X, DPAD_Y, PLAYFIELD_X, PLAYFIELD_Y, PLAYFIELD_WIDTH, PLAYFIELD_HE
 import { createPauseButton } from "../../../ui/createPauseButton";
 import { createInfoButton } from "../../../ui/createInfoButton";
 import { getGameMeta } from "../../../hub/gameRegistry";
+import { DirectionQueue, type Point } from "../directionQueue";
 
 // Frame matches Brick Breaker's box exactly; the grid (which may not fill it
 // exactly, since COLS/ROWS are fixed) is centered inside via GRID_X/GRID_Y.
 const GRID_X = PLAYFIELD_X + (PLAYFIELD_WIDTH - COLS * CELL) / 2;
 const GRID_Y = PLAYFIELD_Y + (PLAYFIELD_HEIGHT - ROWS * CELL) / 2;
 
-interface Point {
-  x: number;
-  y: number;
-}
-
 export class GameScene extends Phaser.Scene {
   private snake: Point[] = [];
   private direction: Point = { x: 1, y: 0 };
-  private pendingDirection: Point = { x: 1, y: 0 };
+  private directionQueue = new DirectionQueue(this.direction);
   private food: Point = { x: 0, y: 0 };
   private segmentRects: Phaser.GameObjects.Rectangle[] = [];
   private foodRect!: Phaser.GameObjects.Rectangle;
@@ -45,7 +41,7 @@ export class GameScene extends Phaser.Scene {
       { x: startX - 2, y: startY },
     ];
     this.direction = { x: 1, y: 0 };
-    this.pendingDirection = { x: 1, y: 0 };
+    this.directionQueue.reset(this.direction);
     this.tickMs = TIMING.BASE_TICK_MS;
     this.score = 0;
     this.gameOver = false;
@@ -113,13 +109,12 @@ export class GameScene extends Phaser.Scene {
 
   private setDirection(dx: number, dy: number): void {
     if (this.gameOver) return;
-    if (dx === -this.direction.x && dy === -this.direction.y) return;
-    this.pendingDirection = { x: dx, y: dy };
+    this.directionQueue.push(dx, dy);
   }
 
   private tick(): void {
     if (this.gameOver) return;
-    this.direction = this.pendingDirection;
+    this.direction = this.directionQueue.advance();
     const head = this.snake[0];
     const newHead: Point = { x: head.x + this.direction.x, y: head.y + this.direction.y };
 

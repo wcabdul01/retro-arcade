@@ -10,9 +10,26 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
 
+// AppLovin MAX credentials: android/applovin.properties is gitignored (see
+// android/applovin.properties.example for the template). Any value left
+// blank/missing falls back to "" below, which AppLovinPlugin.java reads as
+// "ads not configured" and safely no-ops -- same fallback shape as the
+// keystore.properties handling above.
+def appLovinPropertiesFile = rootProject.file("applovin.properties")
+def appLovinProperties = new Properties()
+if (appLovinPropertiesFile.exists()) {
+    appLovinProperties.load(new FileInputStream(appLovinPropertiesFile))
+}
+def appLovinSdkKey = appLovinProperties.getProperty("sdkKey", "")
+
 android {
     namespace "com.retroarcade.app"
     compileSdk rootProject.ext.compileSdkVersion
+    // AGP 8+ no longer generates BuildConfig by default; AppLovinPlugin.java
+    // reads AppLovin credentials from it (see buildConfigField calls below).
+    buildFeatures {
+        buildConfig true
+    }
     defaultConfig {
         applicationId "com.retroarcade.app"
         minSdkVersion rootProject.ext.minSdkVersion
@@ -20,6 +37,11 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        manifestPlaceholders = [applovinSdkKey: appLovinSdkKey]
+        buildConfigField "String", "APPLOVIN_SDK_KEY", "\"${appLovinSdkKey}\""
+        buildConfigField "String", "APPLOVIN_BANNER_AD_UNIT_ID", "\"${appLovinProperties.getProperty('bannerAdUnitId', '')}\""
+        buildConfigField "String", "APPLOVIN_INTERSTITIAL_AD_UNIT_ID", "\"${appLovinProperties.getProperty('interstitialAdUnitId', '')}\""
+        buildConfigField "String", "APPLOVIN_REWARDED_AD_UNIT_ID", "\"${appLovinProperties.getProperty('rewardedAdUnitId', '')}\""
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
              // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
@@ -61,6 +83,13 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
     implementation project(':capacitor-cordova-android-plugins')
+
+    // AppLovin MAX (see android/app/src/main/java/com/retroarcade/app/AppLovinPlugin.java).
+    // Resolves from mavenCentral()/google() (both already declared in the
+    // root build.gradle) -- no extra repository needed for the base SDK.
+    implementation "com.applovin:applovin-sdk:+"
+    // Advertising ID (AAID) module the AppLovin SDK needs but doesn't bundle.
+    implementation "com.google.android.gms:play-services-ads-identifier:+"
 }
 
 apply from: 'capacitor.build.gradle'
