@@ -8,9 +8,12 @@ Writes:
   - tools/branding/output/icon-master-1024.png       (design source)
   - tools/branding/output/icon-play-512.png           (Play Console upload)
   - tools/branding/output/feature-graphic-1024x500.png (Play Console upload)
+  - tools/branding/output/icon-appgallery-216.png     (AppGallery Connect upload)
   - android/app/src/main/res/mipmap-*/ic_launcher.png
   - android/app/src/main/res/mipmap-*/ic_launcher_round.png
   - android/app/src/main/res/mipmap-*/ic_launcher_foreground.png
+  - ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png
+  - ios/App/App/Assets.xcassets/Splash.imageset/splash-2732x2732*.png
 """
 
 import os
@@ -20,6 +23,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 OUT_DIR = os.path.join(ROOT, "tools", "branding", "output")
 FONT_PATH = os.path.join(ROOT, "public", "fonts", "PressStart2P-Regular.ttf")
 RES_DIR = os.path.join(ROOT, "android", "app", "src", "main", "res")
+IOS_ASSETS_DIR = os.path.join(ROOT, "ios", "App", "App", "Assets.xcassets")
 
 # Muted olive/khaki LCD palette, matching src/config/AppConfig.ts (GB.*).
 LIGHTEST = (0xAB, 0xB1, 0x8C, 255)
@@ -170,6 +174,16 @@ def make_feature_graphic() -> Image.Image:
     return img.convert("RGB")
 
 
+def make_ios_splash() -> Image.Image:
+    """2732x2732 launch image. The storyboard aspect-fills it, so phones crop
+    the sides -- keep the glyph small and centered."""
+    img = Image.new("RGBA", (2732, 2732), LIGHTEST)
+    draw_grid_texture(img, spacing=36)
+    draw = ImageDraw.Draw(img)
+    draw_joystick(draw, 1366, 1366, 0.6)
+    return img.convert("RGB")
+
+
 def main() -> None:
     os.makedirs(OUT_DIR, exist_ok=True)
 
@@ -178,6 +192,10 @@ def main() -> None:
 
     play_icon = master.resize((512, 512), Image.Resampling.LANCZOS)
     play_icon.save(os.path.join(OUT_DIR, "icon-play-512.png"))
+
+    master.resize((216, 216), Image.Resampling.LANCZOS).convert("RGB").save(
+        os.path.join(OUT_DIR, "icon-appgallery-216.png")
+    )
 
     feature = make_feature_graphic()
     feature.save(os.path.join(OUT_DIR, "feature-graphic-1024x500.png"))
@@ -197,11 +215,20 @@ def main() -> None:
             os.path.join(mip_dir, "ic_launcher_foreground.png")
         )
 
+    # App Store Connect rejects icons with an alpha channel, so save as RGB.
+    master.convert("RGB").save(
+        os.path.join(IOS_ASSETS_DIR, "AppIcon.appiconset", "AppIcon-512@2x.png")
+    )
+    splash = make_ios_splash()
+    for name in ("splash-2732x2732.png", "splash-2732x2732-1.png", "splash-2732x2732-2.png"):
+        splash.save(os.path.join(IOS_ASSETS_DIR, "Splash.imageset", name))
+
     print("Done. Wrote:")
     print(f"  {OUT_DIR}\\icon-master-1024.png")
     print(f"  {OUT_DIR}\\icon-play-512.png")
     print(f"  {OUT_DIR}\\feature-graphic-1024x500.png")
     print(f"  {len(LEGACY_SIZES) * 2 + len(FOREGROUND_SIZES)} files under android/app/src/main/res/mipmap-*/")
+    print("  iOS AppIcon + Splash under ios/App/App/Assets.xcassets/")
 
 
 if __name__ == "__main__":

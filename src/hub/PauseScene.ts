@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import { GAME_WIDTH, GAME_HEIGHT, GB, FONT_FAMILY } from "../config/AppConfig";
 import { createButton } from "../ui/createButton";
-import { exitApp } from "../platform/exitApp";
+import { canExitApp, exitApp } from "../platform/exitApp";
 import { AdsManager } from "../systems/AdsManager";
 
 interface PauseSceneData {
@@ -56,18 +56,20 @@ export class PauseScene extends Phaser.Scene {
       this.scene.launch("Settings");
     });
 
-    createButton(this, GAME_WIDTH / 2, centerY + 160, "EXIT", () => {
-      if (this.exiting) return;
-      this.exiting = true;
-      AdsManager.hideBanner();
-      AdsManager.showInterstitial(() => {
-        exitApp(() => {
-          this.scene.stop(this.pauseData.returnSceneKey);
-          if (this.pauseData.uiSceneKey) this.scene.stop(this.pauseData.uiSceneKey);
-          this.scene.stop();
-          this.scene.start("Hub");
+    if (canExitApp()) {
+      createButton(this, GAME_WIDTH / 2, centerY + 160, "EXIT", () => {
+        if (this.exiting) return;
+        this.exiting = true;
+        AdsManager.hideBanner();
+        AdsManager.showInterstitial(() => {
+          exitApp(() => {
+            this.scene.stop(this.pauseData.returnSceneKey);
+            if (this.pauseData.uiSceneKey) this.scene.stop(this.pauseData.uiSceneKey);
+            this.scene.stop();
+            this.scene.start("Hub");
+          });
         });
       });
-    });
+    }
   }
 }

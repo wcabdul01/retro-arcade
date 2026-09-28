@@ -1,0 +1,52 @@
+# Codemagic CI: builds, signs and uploads the iOS app to App Store Connect /
+# TestFlight from a cloud Mac -- no local Mac/Xcode needed. Setup steps are in
+# tools/store-assets/apple-huawei-setup.md. Started manually from the
+# Codemagic dashboard (no push triggers).
+workflows:
+  ios-release:
+    name: iOS release (TestFlight)
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    integrations:
+      # Name of the App Store Connect API key added under
+      # Codemagic > Team settings > Integrations > Developer Portal.
+      app_store_connect: Retro Arcade ASC key
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.retroarcade.app
+      vars:
+        XCODE_WORKSPACE: ios/App/App.xcworkspace
+        XCODE_SCHEME: App
+        # Numeric "Apple ID" from App Store Connect > App Information.
+        APP_STORE_APPLE_ID: "0000000000"
+      node: 20
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Install dependencies
+        script: npm ci
+      - name: Build web bundle and sync iOS project
+        script: |
+          npm run build
+          npx cap sync ios
+      - name: Set up code signing
+        script: xcode-project use-profiles
+      - name: Set build number
+        script: |
+          LATEST=$(app-store-connect get-latest-testflight-build-number "$APP_STORE_APPLE_ID" || echo 0)
+          BUILD_NUMBER=$((LATEST + 1))
+          echo "Build number: $BUILD_NUMBER"
+          sed -i '' "s/CURRENT_PROJECT_VERSION = [0-9]*;/CURRENT_PROJECT_VERSION = $BUILD_NUMBER;/" ios/App/App.xcodeproj/project.pbxproj
+      - name: Build signed IPA
+        script: |
+          xcode-project build-ipa \
+            --workspace "$XCODE_WORKSPACE" \
+            --scheme "$XCODE_SCHEME"
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true

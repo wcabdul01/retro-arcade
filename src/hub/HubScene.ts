@@ -5,7 +5,7 @@ import type { SaveData } from "../platform";
 import { sfx } from "../systems/SoundManager";
 import { AdsManager } from "../systems/AdsManager";
 import { createButton } from "../ui/createButton";
-import { exitApp } from "../platform/exitApp";
+import { canExitApp, exitApp } from "../platform/exitApp";
 
 const TILE_WIDTH = 210;
 const TILE_HEIGHT = 96;
@@ -76,11 +76,13 @@ export class HubScene extends Phaser.Scene {
       });
     });
 
-    createButton(this, GAME_WIDTH / 2, EXIT_Y + OFFSET_Y, "EXIT", () => {
-      exitApp(() => {
-        // Web fallback: window.close() already attempted; nothing else to do here.
+    if (canExitApp()) {
+      createButton(this, GAME_WIDTH / 2, EXIT_Y + OFFSET_Y, "EXIT", () => {
+        exitApp(() => {
+          // Web fallback: window.close() already attempted; nothing else to do here.
+        });
       });
-    });
+    }
   }
 
   private createTile(

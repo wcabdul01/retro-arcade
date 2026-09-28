@@ -14,8 +14,8 @@ import { AppLovin } from "../platform/AppLovin";
 // unsupported platforms, so a build without real credentials is safe, not
 // broken.
 //
-// iOS has no equivalent native plugin yet -- isSupported gates on
-// isNativePlatform(), but AppLovinPlugin.java is Android-only for now.
+// iOS has no equivalent native plugin yet, so isSupported gates on the
+// Android platform specifically -- the iOS build ships ad-free for now.
 
 const INTERSTITIAL_MIN_INTERVAL_MS = 60_000;
 
@@ -27,7 +27,7 @@ class AdsManagerImpl {
   private adFree = false;
 
   private get isSupported(): boolean {
-    return Capacitor.isNativePlatform() && !this.adFree;
+    return Capacitor.getPlatform() === "android" && !this.adFree;
   }
 
   /** Set once at boot from the purchased "remove ads" entitlement. When true,
@@ -69,7 +69,7 @@ class AdsManagerImpl {
   async hideBanner(): Promise<void> {
     // Not gated on isSupported/adFree: this must still be able to dismiss a
     // banner that was already showing before the player purchased ad-free.
-    if (!Capacitor.isNativePlatform() || !this.bannerVisible) return;
+    if (Capacitor.getPlatform() !== "android" || !this.bannerVisible) return;
     try {
       await AppLovin.hideBanner();
       this.bannerVisible = false;
