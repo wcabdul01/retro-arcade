@@ -62,8 +62,8 @@ Dynamic Island, every game's controls, sound, haptics.
 
 ### 6. Listing + submit
 In App Store Connect → the app → iOS App 1.1:
-- **Screenshots**: 6.9" iPhone, **1320 × 2868** portrait (3–10). The
-  existing Play screenshots are too small — need a fresh capture.
+- **Screenshots**: 6.9" iPhone, **1320 × 2868** portrait (3–10) —
+  `screenshots/appstore/*.png` (see "Screenshots" below).
 - Promotional text, description, keywords (100 chars, comma-separated, e.g.
   `arcade,retro,snake,tetris,brick breaker,sudoku,solitaire,pixel,classic,offline`),
   Support URL, Privacy Policy URL (above).
@@ -101,23 +101,30 @@ Output: `android/app/build/outputs/apk/release/app-release.apk`
 1. https://developer.huawei.com/consumer/en/service/josp/agc/index.html →
    **My apps → New** → Android, category **Game**, package
    `com.retroarcade.app`, default language English.
-2. **App information**: name, short intro (≤80 chars), full description
-   (from `store-listing.md`; no "Google Play" mentions — AppGallery
-   rejects those), icon `tools/branding/output/icon-appgallery-216.png`,
-   screenshots (3–8 portrait; 1080 × 1920-class recommended — need a fresh
-   high-res capture, same as Apple), privacy policy URL.
+2. **App information**: copy every field from `appgallery-listing.md`
+   (name, intro, description, icon, the 8 screenshots in
+   `screenshots/appgallery/`, privacy policy URL, declarations).
 3. **Version information → Software packages**: upload the APK. Leave
    *App signing* off when uploading an APK signed with your own key.
 4. **Distribution**: countries/regions — **exclude Chinese mainland** (games
    there require an ICP filing + game licence). Content rating
-   questionnaire: mild cartoon violence. Declare that the app contains
-   ads.
+   questionnaire: mild cartoon violence. Ads declaration: *No* while
+   `applovin.properties` is empty (see `appgallery-listing.md`).
 5. Submit for review — typically 3–5 working days for games.
 
 ---
 
+## Screenshots
+Captured from the real game in headless Chrome, then framed with captions:
+```
+npm run dev                                         # in one terminal
+node tools/store-assets/capture_screenshots.mjs     # -> screenshots/hires-raw/
+python tools/store-assets/compose_screenshots.py    # -> appgallery/ + appstore/
+```
+Per-game tap/key scripts live in `screenshot_scenarios.mjs`; captions and
+order in `compose_screenshots.py`.
+
 ## Later
-- High-res screenshots for both stores (1320 × 2868 for Apple).
 - AppLovin iOS plugin (Swift) + App Tracking Transparency prompt + SKAdNetwork IDs.
 - Fill `android/applovin.properties` — ads are currently off on Android too
   (the file doesn't exist in this checkout).
