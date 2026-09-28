@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { GAME_WIDTH, FONT_FAMILY, COLORS } from "../../../config/AppConfig";
 import { createButton } from "../../../ui/createButton";
+import { addGameOverExtras } from "../../../ui/addGameOverExtras";
 import { AdsManager } from "../../../systems/AdsManager";
 import { ScoreManager } from "../systems/ScoreManager";
 
@@ -73,5 +74,6 @@ export class GameOverScene extends Phaser.Scene {
     createButton(this, GAME_WIDTH / 2, nextY + 70, "Main Menu", () => {
       this.scene.start("Hub");
     });
+    addGameOverExtras(this, "brick-breaker", data.score, nextY + 140);
   }
 }

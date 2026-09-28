@@ -1,41 +1,78 @@
-# Retro Arcade — Play Store Listing Copy
+# Retro Arcade: Google Play listing copy
 
-## App name
-Retro Arcade
+Rewritten for ASO (store search) in v1.2, following the tester feedback report.
+The same text is used for AppGallery (`appgallery-listing.md`) and the App Store
+(`apple-huawei-setup.md`).
+
+## App name (max 30 characters)
+Retro Arcade: 10 Classic Games
+
+(30 characters)
 
 ## Short description (max 80 characters)
-10 classic arcade games in one pixel-perfect retro hub. No ads to start.
+Snake, block puzzle, brick breaker, sudoku & more retro games. Plays offline!
 
-(72 characters)
+(77 characters)
 
 ## Full description (max 4000 characters)
 
-RETRO ARCADE — 10 CLASSIC GAMES, ONE ARCADE CABINET
+Retro Arcade packs 10 classic arcade games into one free app with a nostalgic pixel-art look. No Wi-Fi needed, no account, no sign-in. Open the app, pick a game and play.
 
-Step into a pixel-art arcade hub and pick your game. Retro Arcade bundles
-ten classic, easy-to-learn games into one clean, distraction-free package —
-no accounts, no forced tutorials, just pick up and play.
+Snake, block puzzles, brick breaker, a space shooter, sudoku, solitaire and more, all in one download and all playable offline.
 
-GAMES INCLUDED
-• Brick Breaker — Bounce, break, clear the board
-• Block Drop — Stack and clear the lines
-• Block Rise — Rows push up from below, clear them before they reach the top
-• Snake — Grow long, don't bite yourself
-• Tank War — Blast through walls and foes
-• Racing — Dodge traffic, survive the lanes
-• Star Defender — Hold the line against the invading fleet
-• Memory Match — Find every pair before time runs out
-• Sudoku — Fill the grid, five mistakes allowed
-• Solitaire — Clear the tableau, ace to king
+🕹️ 10 CLASSIC GAMES IN ONE
 
-WHY RETRO ARCADE
-• Ten full games in a single download — no separate installs
-• Simple on-screen controls (D-pad and action buttons) built for touch
-• High scores saved per game, right on your device
-• Clean, muted pixel-art style with a matching retro font
-• Difficulty levels for Sudoku and Memory Match
+• BRICK BREAKER: Bounce the ball, smash every brick and clear 5 hand-built levels. The classic paddle-and-ball arcade game.
 
-Whether you've got two minutes or twenty, Retro Arcade has a game that
-fits. Perfect for commutes, waiting rooms, or unwinding after a long day.
+• BLOCK DROP: The falling block puzzle. Move and rotate the pieces, complete lines to clear them, and keep the stack from reaching the top.
 
----
+• BLOCK RISE: A twist on the block puzzle. Rows push up from the bottom, so clear them before they reach the top.
+
+• SNAKE: The retro snake game. Eat, grow longer and speed up, but don't hit the walls or your own tail.
+
+• TANK WAR: Drive your tank through a maze of breakable walls and blast the enemy tanks before they get you.
+
+• RACING: An endless car racing game. Weave between lanes, dodge traffic and hold BOOST for a high score.
+
+• STAR DEFENDER: A retro space shooter. Hold the line against wave after wave of the invading alien fleet.
+
+• MEMORY MATCH: A brain-training card game. Flip tiles, find every matching pair and beat the clock, with 5 difficulty levels.
+
+• SUDOKU: The classic number puzzle, from Easy to Master. Five mistakes allowed, plus hints and undo.
+
+• SOLITAIRE: Classic Klondike card solitaire. Build the tableau and move every card to the foundations, ace to king.
+
+⭐ WHY PLAYERS LIKE RETRO ARCADE
+
+• Offline games: play anywhere, with no internet or Wi-Fi needed
+• 10 full games in a single small download
+• Simple touch controls: an on-screen D-pad and action buttons
+• High scores saved for every game, so you can beat your best
+• A quick how-to-play card the first time you open each game
+• Adjustable contrast, sound and vibration
+• Share your high score with friends
+• A clean, relaxing pixel look inspired by old handheld consoles
+
+⏱️ PERFECT FOR SHORT BREAKS
+
+Got two minutes on a commute, in a waiting room or on a coffee break? Play a quick round of snake or sudoku. Got longer? Chase a high score in the block puzzle or clear every brick breaker level. Retro Arcade is a relaxing game collection for kids and adults who love old-school, nostalgic games.
+
+Download Retro Arcade and bring the classic arcade back to your pocket.
+
+(2360 characters)
+
+## Screenshots
+Upload `screenshots/appgallery/01-hub.png` … `08-racing.png` (1080×1920,
+captioned) in place of the old uncaptioned phone captures.
+
+## Target search terms
+Worked into the text above: retro games, arcade games, classic games,
+offline games, no wifi games, snake game, block puzzle, brick breaker,
+sudoku, solitaire, memory game, car racing, tank game, space shooter,
+pixel games, game collection.
+
+## Trademark note
+Don't use "Tetris", "Space Invaders", "Breakout", "Pac-Man" or other game
+brand names anywhere in the title, description or keywords. Their owners
+routinely get listings taken down. Use the generic terms instead:
+block puzzle, falling blocks, space shooter, brick breaker.

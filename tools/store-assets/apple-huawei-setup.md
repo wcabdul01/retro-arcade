@@ -64,9 +64,11 @@ Dynamic Island, every game's controls, sound, haptics.
 In App Store Connect → the app → iOS App 1.1:
 - **Screenshots**: 6.9" iPhone, **1320 × 2868** portrait (3–10) —
   `screenshots/appstore/*.png` (see "Screenshots" below).
-- Promotional text, description, keywords (100 chars, comma-separated, e.g.
-  `arcade,retro,snake,tetris,brick breaker,sudoku,solitaire,pixel,classic,offline`),
-  Support URL, Privacy Policy URL (above).
+- Name: `Retro Arcade: 10 Classic Games` · Subtitle (30): `Snake, Sudoku & Block Puzzles`
+- Description: the full description from `store-listing.md`.
+- Keywords (97/100, no spaces after commas; Apple already indexes
+  words in the name, so they're left out): `offline,snake,block,puzzle,brick,breaker,sudoku,solitaire,pixel,no wifi,tank,racing,space,shooter`
+- Support URL, Privacy Policy URL (above).
 - Category: **Games → Arcade** (secondary: Puzzle). Price: Free.
 - **Age rating** questionnaire: *Infrequent/Mild Cartoon or Fantasy Violence*
   (Tank War, Star Defender) — everything else None.
@@ -79,8 +81,8 @@ In App Store Connect → the app → iOS App 1.1:
 
 ## Huawei AppGallery
 
-Uses the **same signed release APK** as Android (release keystore, versionCode 2
-/ 1.1). AppLovin ads work on Huawei phones without Google services (lower
+Uses the same code and release key as the Play build (1.2 / versionCode 3),
+but built with `npm run cap:sync:huawei` so store links point to AppGallery. AppLovin ads work on Huawei phones without Google services (lower
 revenue — no Google advertising ID).
 
 ### 1. Huawei Developer account — free
@@ -89,13 +91,16 @@ revenue — no Google advertising ID).
    selfie verification. Takes 1–3 working days.
 
 ### 2. Build the APK
+Use the **Huawei** web build so "Rate this app" opens AppGallery rather than
+Google Play:
 ```
-npm run cap:sync
+npm run cap:sync:huawei
 cd android
 ./gradlew assembleRelease
 ```
 Output: `android/app/build/outputs/apk/release/app-release.apk`
 (signed with the Play release key via `android/keystore.properties`).
+Afterwards, run `npm run cap:sync` again before any Play build.
 
 ### 3. Create the app in AppGallery Connect
 1. https://developer.huawei.com/consumer/en/service/josp/agc/index.html →

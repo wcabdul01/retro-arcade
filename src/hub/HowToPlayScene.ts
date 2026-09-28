@@ -6,6 +6,8 @@ interface HowToPlaySceneData {
   title: string;
   howToPlay: string;
   returnSceneKey: string;
+  /** Close button text; "GOT IT" when auto-shown on a game's first launch. */
+  closeLabel?: string;
 }
 
 // Launched on top of a paused GameScene by createInfoButton. Mirrors the
@@ -47,7 +49,7 @@ export class HowToPlayScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    createButton(this, centerX, centerY + 160, "CLOSE", () => {
+    createButton(this, centerX, centerY + 160, data.closeLabel ?? "CLOSE", () => {
       this.scene.resume(this.sceneData.returnSceneKey);
       this.scene.stop();
     });

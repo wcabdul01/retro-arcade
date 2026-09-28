@@ -8,14 +8,19 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "cap:sync": "npm run build && npx cap sync",
+    "build:huawei": "tsc -b && vite build --mode huawei",
+    "cap:sync:huawei": "npm run build:huawei && npx cap sync android",
     "test": "vitest run",
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@capacitor-community/in-app-review": "^6.0.0",
     "@capacitor/app": "^6.0.1",
+    "@capacitor/app-launcher": "^6.0.4",
     "@capacitor/core": "^6.1.2",
     "@capacitor/haptics": "^6.0.1",
     "@capacitor/preferences": "^6.0.2",
+    "@capacitor/share": "^6.0.4",
     "phaser": "^3.80.1"
   },
   "devDependencies": {

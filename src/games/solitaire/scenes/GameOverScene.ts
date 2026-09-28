@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { GAME_WIDTH, FONT_FAMILY, COLORS } from "../../../config/AppConfig";
 import { createButton } from "../../../ui/createButton";
+import { addGameOverExtras } from "../../../ui/addGameOverExtras";
 
 interface GameOverData {
   score: number;
@@ -47,5 +48,6 @@ export class GameOverScene extends Phaser.Scene {
     createButton(this, GAME_WIDTH / 2, 530, "Main Menu", () => {
       this.scene.start("Hub");
     });
+    addGameOverExtras(this, "solitaire", data.score, 600);
   }
 }

@@ -11,12 +11,20 @@ interface SettingsData {
   soundEnabled: boolean;
   vibrationEnabled: boolean;
   contrastIndex: number;
+  /** Game titles whose how-to-play card has auto-shown once already. */
+  seenHowToPlay: string[];
+  /** Finished games (any game over / win), for review prompt timing. */
+  gamesCompleted: number;
+  reviewPromptsShown: number;
 }
 
 const DEFAULT_SETTINGS: SettingsData = {
   soundEnabled: true,
   vibrationEnabled: true,
   contrastIndex: DEFAULT_CONTRAST_INDEX,
+  seenHowToPlay: [],
+  gamesCompleted: 0,
+  reviewPromptsShown: 0,
 };
 
 function applyContrast(percent: number): void {
@@ -54,6 +62,34 @@ class SettingsStore {
 
   get contrastPercent(): number {
     return CONTRAST_LEVELS[this.data.contrastIndex] ?? 100;
+  }
+
+  hasSeenHowToPlay(gameTitle: string): boolean {
+    return this.data.seenHowToPlay.includes(gameTitle);
+  }
+
+  markHowToPlaySeen(gameTitle: string): void {
+    if (this.hasSeenHowToPlay(gameTitle)) return;
+    this.data.seenHowToPlay = [...this.data.seenHowToPlay, gameTitle];
+    this.persist();
+  }
+
+  get gamesCompleted(): number {
+    return this.data.gamesCompleted;
+  }
+
+  get reviewPromptsShown(): number {
+    return this.data.reviewPromptsShown;
+  }
+
+  recordGameCompleted(): void {
+    this.data.gamesCompleted += 1;
+    this.persist();
+  }
+
+  recordReviewPromptShown(): void {
+    this.data.reviewPromptsShown += 1;
+    this.persist();
   }
 
   setSoundEnabled(value: boolean): void {

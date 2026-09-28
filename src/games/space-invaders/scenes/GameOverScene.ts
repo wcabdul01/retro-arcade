@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { GAME_WIDTH, FONT_FAMILY, COLORS } from "../../../config/AppConfig";
 import { createButton } from "../../../ui/createButton";
+import { addGameOverExtras } from "../../../ui/addGameOverExtras";
 import { AdsManager } from "../../../systems/AdsManager";
 
 interface GameOverData {
@@ -60,5 +61,6 @@ export class GameOverScene extends Phaser.Scene {
     createButton(this, GAME_WIDTH / 2, 560, "Main Menu", () => {
       this.scene.start("Hub");
     });
+    addGameOverExtras(this, "space-invaders", data.score, 630);
   }
 }

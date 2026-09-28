@@ -5,16 +5,18 @@
 // canvas, so canvas coordinates == page coordinates.
 //
 // Usage (dev server must be running: `npm run dev`):
-//   node tools/store-assets/capture_screenshots.mjs [url]
+//   node tools/store-assets/capture_screenshots.mjs [url] [scenario name]
+// Env: SCENARIOS=<file.mjs> and OUT_DIR=<dir> to run other scenarios;
+//      FRESH=1 to start as a brand-new player (first-run how-to cards show).
 // Then: python tools/store-assets/compose_screenshots.py
 import { spawn } from "node:child_process";
 import { mkdirSync, writeFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const OUT_DIR = join(HERE, "screenshots", "hires-raw");
+const OUT_DIR = process.env.OUT_DIR ?? join(HERE, "screenshots", "hires-raw");
 const URL = process.argv[2] ?? "http://localhost:5173/";
 const CHROME = process.env.CHROME_PATH ?? "C:/Program Files/Google/Chrome/Application/chrome.exe";
 const PORT = 9333;
@@ -73,6 +75,15 @@ const chrome = spawn(CHROME, [
 const cdp = cdpClient(await connect());
 await cdp.ready;
 await cdp.send("Page.enable");
+// Store shots should show gameplay, not the first-run how-to-play cards, so
+// seed the saved settings (@capacitor/preferences on web = localStorage) as
+// a returning player who has seen them all.
+if (!process.env.FRESH) {
+  const seen = ["Brick Breaker", "Block Drop", "Block Rise", "Snake", "Tank War", "Racing", "Star Defender", "Memory Match", "Sudoku", "Solitaire"];
+  await cdp.send("Page.addScriptToEvaluateOnNewDocument", {
+    source: `try { localStorage.setItem("CapacitorStorage.retro-arcade-settings", ${JSON.stringify(JSON.stringify({ seenHowToPlay: seen }))}); } catch {}`,
+  });
+}
 await cdp.send("Emulation.setDeviceMetricsOverride", { width: W, height: H, deviceScaleFactor: 1, mobile: true });
 
 async function tap(x, y) {
@@ -103,7 +114,8 @@ async function loadHub() {
 
 // --- Scenario runner ------------------------------------------------------
 // Each scenario starts from a fresh page load on the hub.
-const scenarios = (await import("./screenshot_scenarios.mjs")).default;
+const scenarioFile = process.env.SCENARIOS ? pathToFileURL(process.env.SCENARIOS).href : "./screenshot_scenarios.mjs";
+const scenarios = (await import(scenarioFile)).default;
 const only = process.argv[3];
 try {
   for (const s of scenarios) {

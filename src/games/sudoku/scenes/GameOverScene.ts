@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { GAME_WIDTH, FONT_FAMILY, COLORS } from "../../../config/AppConfig";
 import { createButton } from "../../../ui/createButton";
+import { addGameOverExtras } from "../../../ui/addGameOverExtras";
 import { AdsManager } from "../../../systems/AdsManager";
 import type { Grid } from "../engine";
 
@@ -78,5 +79,6 @@ export class GameOverScene extends Phaser.Scene {
     createButton(this, GAME_WIDTH / 2, nextY + 70, "MAIN MENU", () => {
       this.scene.start("Hub");
     });
+    addGameOverExtras(this, "sudoku", data.score, nextY + 140, "SHARE SCORE");
   }
 }

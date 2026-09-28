@@ -5,6 +5,7 @@ import { Settings } from "../systems/Settings";
 import { sfx } from "../systems/SoundManager";
 import { vibrate } from "../systems/Haptics";
 import { ImpactStyle } from "@capacitor/haptics";
+import { canOpenStorePage, openFeedbackEmail, openStorePage } from "../systems/Store";
 
 export class SettingsScene extends Phaser.Scene {
   constructor() {
@@ -15,21 +16,21 @@ export class SettingsScene extends Phaser.Scene {
     const centerY = GAME_HEIGHT / 2;
 
     this.add.rectangle(GAME_WIDTH / 2, centerY, GAME_WIDTH, GAME_HEIGHT, GB.LIGHTEST, 0.98);
-    this.add.rectangle(GAME_WIDTH / 2, centerY, 300, 480, GB.LIGHT).setStrokeStyle(4, GB.DARKEST);
+    this.add.rectangle(GAME_WIDTH / 2, centerY, 300, 540, GB.LIGHT).setStrokeStyle(4, GB.DARKEST);
 
     this.add
-      .text(GAME_WIDTH / 2, centerY - 195, "SETTINGS", { fontFamily: FONT_FAMILY, fontSize: "18px", color: "#16170f" })
+      .text(GAME_WIDTH / 2, centerY - 225, "SETTINGS", { fontFamily: FONT_FAMILY, fontSize: "18px", color: "#16170f" })
       .setOrigin(0.5);
 
     this.createToggle(
-      centerY - 125,
+      centerY - 155,
       "SOUND",
       () => Settings.soundEnabled,
       () => Settings.setSoundEnabled(!Settings.soundEnabled)
     );
 
     this.createToggle(
-      centerY - 55,
+      centerY - 85,
       "VIBRATION",
       () => Settings.vibrationEnabled,
       () => {
@@ -38,14 +39,25 @@ export class SettingsScene extends Phaser.Scene {
       }
     );
 
-    this.createCycleControl(centerY + 15, "CONTRAST", () => `${Settings.contrastPercent}%`, () => Settings.cycleContrast());
+    this.createCycleControl(centerY - 15, "CONTRAST", () => `${Settings.contrastPercent}%`, () => Settings.cycleContrast());
 
     // "Remove Ads" purchase row intentionally omitted for v1 launch — it was
     // wired to a placeholder (Purchases.buyNoAds) that granted the
     // entitlement for free with no real payment. Re-add once real Google
     // Play Billing is implemented (see Purchases.ts).
 
-    createButton(this, GAME_WIDTH / 2, centerY + 85, "BACK", () => {
+    // Web builds have no store listing to open, so RATE only shows on native.
+    if (canOpenStorePage()) {
+      createButton(this, GAME_WIDTH / 2, centerY + 55, "RATE THIS APP", () => {
+        void openStorePage();
+      });
+    }
+
+    createButton(this, GAME_WIDTH / 2, centerY + 125, "SEND FEEDBACK", () => {
+      void openFeedbackEmail();
+    });
+
+    createButton(this, GAME_WIDTH / 2, centerY + 195, "BACK", () => {
       this.scene.stop();
     });
   }
