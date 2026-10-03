@@ -13,7 +13,7 @@ const PACKAGE_ID = "com.retroarcade.app";
 // Fill in once the listings exist: App Store Connect > App Information >
 // Apple ID, and AppGallery Connect > App information > App ID (C + digits).
 const APP_STORE_ID = "";
-const APPGALLERY_APP_ID = "";
+const APPGALLERY_APP_ID = "C119204471";
 
 const PLAY_URL = `https://play.google.com/store/apps/details?id=${PACKAGE_ID}`;
 const SUPPORT_EMAIL = "wcabdul01@gmail.com";
