@@ -64,7 +64,7 @@ Games → Casual (alternative: Puzzle)
 - Screenshots (1080×1920, upload in order):
   `tools/store-assets/screenshots/appgallery/01-hub.png` … `08-racing.png`
 - APK: `android/app/build/outputs/huawei/retro-arcade-1.2-huawei.apk`
-  (1.2, versionCode 3, signed with the release key). **Build it with
+  (1.2, versionCode 4, signed with the release key; no ad SDK inside). **Build it with
   `npm run cap:sync:huawei`**, not the Play build. That makes "Rate this app"
   open AppGallery instead of Google Play (see `src/systems/Store.ts`).
 

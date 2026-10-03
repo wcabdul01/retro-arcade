@@ -81,7 +81,7 @@ In App Store Connect → the app → iOS App 1.1:
 
 ## Huawei AppGallery
 
-Uses the same code and release key as the Play build (1.2 / versionCode 3),
+Uses the same code and release key as the Play build (1.2 / versionCode 4),
 but built with `npm run cap:sync:huawei` so store links point to AppGallery. AppLovin ads work on Huawei phones without Google services (lower
 revenue — no Google advertising ID).
 
