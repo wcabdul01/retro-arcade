@@ -50,13 +50,8 @@
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <!-- The AppLovin MAX SDK (and the mediated networks it can pull in) use
-         the advertising ID to serve and measure ads, so these are declared
-         normally now instead of being force-removed as they were during
-         the AdMob-disabled period. NOTE: this means the Play Console Data
-         Safety form needs to be updated to declare advertising-ID use
-         before the next Play Store submission, even though no real ads
-         will actually request/show until android/applovin.properties is
-         filled in with real AppLovin credentials (see AdsManager.ts). -->
-    <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
+    <!-- No explicit AD_ID permission: play-services-ads-identifier adds it
+         through manifest merging, and that library is only included when
+         ads are enabled (see app/build.gradle). Ad-free builds therefore
+         ship without it. -->
 </manifest>

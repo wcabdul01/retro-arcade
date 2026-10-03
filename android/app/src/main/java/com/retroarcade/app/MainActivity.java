@@ -9,16 +9,32 @@ import android.view.WindowInsetsController;
 import android.view.WindowManager;
 
 import com.getcapacitor.BridgeActivity;
+import com.getcapacitor.Plugin;
 
 public class MainActivity extends BridgeActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // Must run before super.onCreate() -- Capacitor builds its plugin
         // registry during Bridge init, which happens inside onCreate().
-        registerPlugin(AppLovinPlugin.class);
+        registerAdsPlugin();
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         hideSystemBars();
+    }
+
+    /**
+     * AppLovinPlugin is only compiled in when android/applovin.properties has
+     * an SDK key (see app/build.gradle), so it's looked up by name. In an
+     * ad-free build the JS side gets "not implemented" and AdsManager.ts
+     * treats that as ads unavailable.
+     */
+    @SuppressWarnings("unchecked")
+    private void registerAdsPlugin() {
+        try {
+            registerPlugin((Class<? extends Plugin>) Class.forName("com.retroarcade.app.AppLovinPlugin"));
+        } catch (ClassNotFoundException ignored) {
+            // Ad-free build.
+        }
     }
 
     @Override

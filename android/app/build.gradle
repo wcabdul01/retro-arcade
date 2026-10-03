@@ -21,6 +21,12 @@ if (appLovinPropertiesFile.exists()) {
     appLovinProperties.load(new FileInputStream(appLovinPropertiesFile))
 }
 def appLovinSdkKey = appLovinProperties.getProperty("sdkKey", "")
+// Without an SDK key the AppLovin SDK, the advertising-ID library and
+// AppLovinPlugin.java (src/ads/java) are left out of the build entirely, so
+// an ad-free release ships no ad code and Play's Data safety scan matches
+// "no data collected". AdsManager.ts already treats the missing plugin as
+// "ads unavailable".
+def adsEnabled = !appLovinSdkKey.trim().isEmpty()
 
 android {
     namespace "com.retroarcade.app"
@@ -34,7 +40,7 @@ android {
         applicationId "com.retroarcade.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 3
+        versionCode 4
         versionName "1.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders = [applovinSdkKey: appLovinSdkKey]
@@ -55,6 +61,13 @@ android {
                 storePassword keystoreProperties['storePassword']
                 keyAlias keystoreProperties['keyAlias']
                 keyPassword keystoreProperties['keyPassword']
+            }
+        }
+    }
+    sourceSets {
+        main {
+            if (adsEnabled) {
+                java.srcDirs += 'src/ads/java'
             }
         }
     }
@@ -84,12 +97,15 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
     implementation project(':capacitor-cordova-android-plugins')
 
-    // AppLovin MAX (see android/app/src/main/java/com/retroarcade/app/AppLovinPlugin.java).
+    // AppLovin MAX (see android/app/src/ads/java/com/retroarcade/app/AppLovinPlugin.java).
     // Resolves from mavenCentral()/google() (both already declared in the
     // root build.gradle) -- no extra repository needed for the base SDK.
-    implementation "com.applovin:applovin-sdk:+"
-    // Advertising ID (AAID) module the AppLovin SDK needs but doesn't bundle.
-    implementation "com.google.android.gms:play-services-ads-identifier:+"
+    if (adsEnabled) {
+        implementation "com.applovin:applovin-sdk:+"
+        // Advertising ID (AAID) module the AppLovin SDK needs but doesn't
+        // bundle. Its own manifest also adds the AD_ID permission.
+        implementation "com.google.android.gms:play-services-ads-identifier:+"
+    }
 }
 
 apply from: 'capacitor.build.gradle'
