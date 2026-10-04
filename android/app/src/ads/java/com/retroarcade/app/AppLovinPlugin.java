@@ -99,6 +99,10 @@ public class AppLovinPlugin extends Plugin {
                 return;
             }
 
+            if (BuildConfig.META_ENABLED) {
+                configureMeta();
+            }
+
             Activity activity = getActivity();
             AppLovinSdkInitializationConfiguration initConfig =
                     AppLovinSdkInitializationConfiguration.builder(sdkKey)
@@ -116,6 +120,19 @@ public class AppLovinPlugin extends Plugin {
                     }
             );
         });
+    }
+
+    // Meta wants its data-processing options set before MAX initializes it;
+    // empty = Limited Data Use off. Reflection because the Meta SDK is only on
+    // the classpath when metaEnabled=true (see app/build.gradle).
+    private void configureMeta() {
+        try {
+            Class.forName("com.facebook.ads.AdSettings")
+                    .getMethod("setDataProcessingOptions", String[].class)
+                    .invoke(null, (Object) new String[] {});
+        } catch (Exception ignored) {
+            // Adapter missing or API changed; MAX still runs without Meta.
+        }
     }
 
     private void resolveAvailability(PluginCall call) {

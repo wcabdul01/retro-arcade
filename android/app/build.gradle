@@ -27,6 +27,11 @@ def appLovinSdkKey = appLovinProperties.getProperty("sdkKey", "")
 // "no data collected". AdsManager.ts already treats the missing plugin as
 // "ads unavailable".
 def adsEnabled = !appLovinSdkKey.trim().isEmpty()
+// Meta Audience Network is bidding-only and reached through MAX, so it is
+// just an adapter on top of the AppLovin SDK. Opt-in separately: the Meta
+// SDK changes the Data safety answers, and MAX needs the Meta app/placement
+// IDs set in its dashboard before the adapter does anything.
+def metaEnabled = adsEnabled && appLovinProperties.getProperty("metaEnabled", "false").trim() == "true"
 
 android {
     namespace "com.retroarcade.app"
@@ -48,6 +53,7 @@ android {
         buildConfigField "String", "APPLOVIN_BANNER_AD_UNIT_ID", "\"${appLovinProperties.getProperty('bannerAdUnitId', '')}\""
         buildConfigField "String", "APPLOVIN_INTERSTITIAL_AD_UNIT_ID", "\"${appLovinProperties.getProperty('interstitialAdUnitId', '')}\""
         buildConfigField "String", "APPLOVIN_REWARDED_AD_UNIT_ID", "\"${appLovinProperties.getProperty('rewardedAdUnitId', '')}\""
+        buildConfigField "boolean", "META_ENABLED", "${metaEnabled}"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
              // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
@@ -105,6 +111,9 @@ dependencies {
         // Advertising ID (AAID) module the AppLovin SDK needs but doesn't
         // bundle. Its own manifest also adds the AD_ID permission.
         implementation "com.google.android.gms:play-services-ads-identifier:+"
+    }
+    if (metaEnabled) {
+        implementation "com.applovin.mediation:facebook-adapter:+"
     }
 }
 

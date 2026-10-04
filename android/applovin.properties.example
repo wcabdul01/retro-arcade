@@ -12,3 +12,7 @@ sdkKey=
 bannerAdUnitId=
 interstitialAdUnitId=
 rewardedAdUnitId=
+
+# Meta Audience Network via MAX. Set to true only after the Meta app and
+# placement IDs are entered in the MAX dashboard (Mediation > Networks).
+metaEnabled=false
