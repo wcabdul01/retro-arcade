@@ -61,6 +61,7 @@ export class GameOverScene extends Phaser.Scene {
         if (this.continuing) return;
         this.continuing = true;
         AdsManager.showRewarded(
+          "continue",
           () => {
             this.scene.start("Sudoku.Game", { continueState: resumeState });
           },

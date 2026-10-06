@@ -45,6 +45,7 @@ export class GameOverScene extends Phaser.Scene {
       if (this.continuing) return;
       this.continuing = true;
       AdsManager.showRewarded(
+        "continue",
         () => {
           this.scene.start("SpaceInvaders.Game", { score: data.score, wave: data.wave, lives: 1 });
         },

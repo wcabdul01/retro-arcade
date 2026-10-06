@@ -52,6 +52,7 @@ export class GameOverScene extends Phaser.Scene {
         if (this.continuing) return;
         this.continuing = true;
         AdsManager.showRewarded(
+          "continue",
           () => {
             const scoreManager = new ScoreManager();
             scoreManager.levelIndex = data.levelIndex;

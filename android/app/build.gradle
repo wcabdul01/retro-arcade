@@ -10,34 +10,34 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
 
-// AppLovin MAX credentials: android/applovin.properties is gitignored (see
-// android/applovin.properties.example for the template). Any value left
-// blank/missing falls back to "" below, which AppLovinPlugin.java reads as
-// "ads not configured" and safely no-ops -- same fallback shape as the
+// Unity LevelPlay credentials: android/levelplay.properties is gitignored
+// (see android/levelplay.properties.example for the template). Any value
+// left blank/missing falls back to "" below, which LevelPlayPlugin.java reads
+// as "ads not configured" and safely no-ops -- same fallback shape as the
 // keystore.properties handling above.
-def appLovinPropertiesFile = rootProject.file("applovin.properties")
-def appLovinProperties = new Properties()
-if (appLovinPropertiesFile.exists()) {
-    appLovinProperties.load(new FileInputStream(appLovinPropertiesFile))
+def levelPlayPropertiesFile = rootProject.file("levelplay.properties")
+def levelPlayProperties = new Properties()
+if (levelPlayPropertiesFile.exists()) {
+    levelPlayProperties.load(new FileInputStream(levelPlayPropertiesFile))
 }
-def appLovinSdkKey = appLovinProperties.getProperty("sdkKey", "")
-// Without an SDK key the AppLovin SDK, the advertising-ID library and
-// AppLovinPlugin.java (src/ads/java) are left out of the build entirely, so
-// an ad-free release ships no ad code and Play's Data safety scan matches
-// "no data collected". AdsManager.ts already treats the missing plugin as
-// "ads unavailable".
-def adsEnabled = !appLovinSdkKey.trim().isEmpty()
-// Meta Audience Network is bidding-only and reached through MAX, so it is
-// just an adapter on top of the AppLovin SDK. Opt-in separately: the Meta
-// SDK changes the Data safety answers, and MAX needs the Meta app/placement
-// IDs set in its dashboard before the adapter does anything.
-def metaEnabled = adsEnabled && appLovinProperties.getProperty("metaEnabled", "false").trim() == "true"
+def levelPlay = { String key -> levelPlayProperties.getProperty(key, "").trim() }
+// Without an app key the LevelPlay SDK, its ad networks, the advertising-ID
+// library and LevelPlayPlugin.java (src/ads/java) are left out of the build
+// entirely, so an ad-free release ships no ad code and Play's Data safety
+// scan matches "no data collected". AdsManager.ts already treats the missing
+// plugin as "ads unavailable".
+def adsEnabled = !levelPlay("appKey").isEmpty()
+// Meta Audience Network is bidding-only and reached through LevelPlay, so it
+// is just an adapter. Opt-in separately: the Meta SDK changes the Data safety
+// answers, and LevelPlay needs the Meta app/placement IDs in its dashboard
+// before the adapter does anything.
+def metaEnabled = adsEnabled && levelPlay("metaEnabled") == "true"
 
 android {
     namespace "com.retroarcade.app"
     compileSdk rootProject.ext.compileSdkVersion
-    // AGP 8+ no longer generates BuildConfig by default; AppLovinPlugin.java
-    // reads AppLovin credentials from it (see buildConfigField calls below).
+    // AGP 8+ no longer generates BuildConfig by default; LevelPlayPlugin.java
+    // reads LevelPlay credentials from it (see buildConfigField calls below).
     buildFeatures {
         buildConfig true
     }
@@ -48,11 +48,13 @@ android {
         versionCode 4
         versionName "1.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        manifestPlaceholders = [applovinSdkKey: appLovinSdkKey]
-        buildConfigField "String", "APPLOVIN_SDK_KEY", "\"${appLovinSdkKey}\""
-        buildConfigField "String", "APPLOVIN_BANNER_AD_UNIT_ID", "\"${appLovinProperties.getProperty('bannerAdUnitId', '')}\""
-        buildConfigField "String", "APPLOVIN_INTERSTITIAL_AD_UNIT_ID", "\"${appLovinProperties.getProperty('interstitialAdUnitId', '')}\""
-        buildConfigField "String", "APPLOVIN_REWARDED_AD_UNIT_ID", "\"${appLovinProperties.getProperty('rewardedAdUnitId', '')}\""
+        buildConfigField "String", "LEVELPLAY_APP_KEY", "\"${levelPlay('appKey')}\""
+        buildConfigField "String", "LEVELPLAY_BANNER_AD_UNIT_ID", "\"${levelPlay('bannerAdUnitId')}\""
+        buildConfigField "String", "LEVELPLAY_INTERSTITIAL_AD_UNIT_ID", "\"${levelPlay('interstitialAdUnitId')}\""
+        buildConfigField "String", "LEVELPLAY_REWARDED_CONTINUE_AD_UNIT_ID", "\"${levelPlay('rewardedContinueAdUnitId')}\""
+        buildConfigField "String", "LEVELPLAY_REWARDED_HINTS_AD_UNIT_ID", "\"${levelPlay('rewardedHintsAdUnitId')}\""
+        buildConfigField "String", "LEVELPLAY_REWARDED_UNDOS_AD_UNIT_ID", "\"${levelPlay('rewardedUndosAdUnitId')}\""
+        buildConfigField "boolean", "LEVELPLAY_TEST_SUITE", "${levelPlay('testSuite') == 'true'}"
         buildConfigField "boolean", "META_ENABLED", "${metaEnabled}"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -103,17 +105,23 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
     implementation project(':capacitor-cordova-android-plugins')
 
-    // AppLovin MAX (see android/app/src/ads/java/com/retroarcade/app/AppLovinPlugin.java).
-    // Resolves from mavenCentral()/google() (both already declared in the
-    // root build.gradle) -- no extra repository needed for the base SDK.
+    // Unity LevelPlay (see android/app/src/ads/java/com/retroarcade/app/LevelPlayPlugin.java).
+    // Adapter and network SDK versions are pinned in pairs from the adapter
+    // changelogs (github.com/ironsource-mobile/levelplay-android-adapters);
+    // bump them together.
     if (adsEnabled) {
-        implementation "com.applovin:applovin-sdk:+"
-        // Advertising ID (AAID) module the AppLovin SDK needs but doesn't
-        // bundle. Its own manifest also adds the AD_ID permission.
-        implementation "com.google.android.gms:play-services-ads-identifier:+"
+        implementation "com.unity3d.ads-mediation:mediation-sdk:9.6.1"
+        implementation "com.unity3d.ads-mediation:unityads-adapter:5.14.0"
+        implementation "com.unity3d.ads:unity-ads:4.21.0"
+        // Google Play services LevelPlay needs but doesn't bundle. The
+        // ads-identifier manifest also adds the AD_ID permission.
+        implementation "com.google.android.gms:play-services-appset:16.0.0"
+        implementation "com.google.android.gms:play-services-ads-identifier:18.1.0"
+        implementation "com.google.android.gms:play-services-basement:18.1.0"
     }
     if (metaEnabled) {
-        implementation "com.applovin.mediation:facebook-adapter:+"
+        implementation "com.unity3d.ads-mediation:facebook-adapter:5.5.0"
+        implementation "com.facebook.android:audience-network-sdk:6.22.0"
     }
 }
 

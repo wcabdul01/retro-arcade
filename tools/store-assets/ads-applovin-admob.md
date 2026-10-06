@@ -1,4 +1,11 @@
-# Ads: AppLovin email, AdSense/AdMob appeal, AdMob options
+# Ads: LevelPlay, AdSense/AdMob appeal, Meta
+
+**2026-10-06: AppLovin stopped accepting new sign-ups, so mediation moved to
+Unity LevelPlay.** The app key and 5 ad unit IDs are in the gitignored
+`android/levelplay.properties` (template: `levelplay.properties.example`).
+Ad units: Retro Banner, Retro Interstitial, Retro Reward Continue (1),
+Retro Reward Hints (3), Retro Reward Undos (3). Privacy setting: COPPA
+"Not directed". Sections 1 and 3 below are kept for history.
 
 Prepared 2026-10-04. Retro Arcade is live on Google Play (1.2, versionCode 4, ad-free).
 
@@ -170,31 +177,25 @@ can be closed too.
 Meta Audience Network is bidding-only, so it can't be added as a separate
 SDK integration. It runs as an adapter inside AppLovin MAX.
 
-**Code (done 2026-10-04):** `metaEnabled=true` in `android/applovin.properties`
-adds `com.applovin.mediation:facebook-adapter` and sets Meta's data
-processing options (Limited Data Use off) before MAX starts. The default
-is off. Builds with Meta on and with ads off both compile.
+**Code:** `metaEnabled=true` in `android/levelplay.properties` adds the
+LevelPlay Meta adapter (5.5.0) + Audience Network SDK (6.22.0) and sets
+Meta's data processing options (Limited Data Use off) before init.
+Default is off.
 
-**User setup (can start before AppLovin approves):**
-1. [ ] Create a Meta for Developers account: https://developers.facebook.com
-   (sign in with Facebook, verify phone/email).
-2. [ ] Open Monetization Manager: https://business.facebook.com/pub → create
-   or choose a business portfolio.
-3. [ ] Add the app: Android, Play Store URL
-   https://play.google.com/store/apps/details?id=com.retroarcade.app.
-   Meta reviews it, and only store-listed apps are eligible.
-4. [ ] Create 3 placements: Banner, Interstitial, Rewarded video. Note the
-   **Meta App ID** and the 3 **placement IDs**.
-5. [ ] Under bidding/mediation partners, add **AppLovin (MAX)**.
-6. [ ] Payout: payment method + tax form in Monetization Manager.
-
-**After AppLovin approves:**
-7. MAX dashboard → Mediation → Networks → Meta Audience Network: enter the
-   App ID, then set each placement ID on the matching MAX ad unit.
-8. Set `metaEnabled=true`, build, and test with MAX's Mediation Debugger.
-9. app-ads.txt: add the Facebook line Monetization Manager gives you.
-10. Play Data safety: declare Device or other IDs + App interactions
-    shared with ad partners; update the privacy policy to name Meta.
+**User setup:**
+1. [ ] Meta for Developers account: https://developers.facebook.com
+2. [ ] Monetization Manager: https://business.facebook.com/pub → business portfolio.
+3. [ ] Add the app (Android, Play Store URL). Meta reviews it.
+4. [ ] Create 3 placements: Banner, Interstitial, Rewarded video
+   (one rewarded placement can serve all 3 rewarded LevelPlay ad units).
+   Note the **App ID** and **placement IDs**.
+5. [ ] Add **Unity LevelPlay (ironSource)** as a bidding partner.
+6. [ ] Payout: payment method + tax form.
+7. [ ] LevelPlay → Setup → SDK Networks → Meta Audience Network: App ID at
+   app level, placement ID on each ad unit instance.
+8. Set `metaEnabled=true`, build, check with `testSuite=true`.
+9. app-ads.txt: add the Facebook line.
+10. Play Data safety + privacy policy: name Meta as an ad partner.
 
 ### Sources
 - https://support.google.com/adsense/answer/57153

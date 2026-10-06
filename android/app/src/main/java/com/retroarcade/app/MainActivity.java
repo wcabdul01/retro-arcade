@@ -23,15 +23,15 @@ public class MainActivity extends BridgeActivity {
     }
 
     /**
-     * AppLovinPlugin is only compiled in when android/applovin.properties has
-     * an SDK key (see app/build.gradle), so it's looked up by name. In an
+     * LevelPlayPlugin is only compiled in when android/levelplay.properties has
+     * an app key (see app/build.gradle), so it's looked up by name. In an
      * ad-free build the JS side gets "not implemented" and AdsManager.ts
      * treats that as ads unavailable.
      */
     @SuppressWarnings("unchecked")
     private void registerAdsPlugin() {
         try {
-            registerPlugin((Class<? extends Plugin>) Class.forName("com.retroarcade.app.AppLovinPlugin"));
+            registerPlugin((Class<? extends Plugin>) Class.forName("com.retroarcade.app.LevelPlayPlugin"));
         } catch (ClassNotFoundException ignored) {
             // Ad-free build.
         }

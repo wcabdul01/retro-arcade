@@ -208,6 +208,7 @@ export class GameScene extends Phaser.Scene {
     if (this.adRequestInProgress) return;
     this.adRequestInProgress = true;
     AdsManager.showRewarded(
+      kind === "hint" ? "hints" : "undos",
       () => {
         if (kind === "hint") this.hintsLeft += AD_REPLENISH_AMOUNT;
         else this.undosLeft += AD_REPLENISH_AMOUNT;

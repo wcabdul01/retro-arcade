@@ -1,18 +1,17 @@
 import { Capacitor } from "@capacitor/core";
-import { AppLovin } from "../platform/AppLovin";
+import { LevelPlay, type RewardKind } from "../platform/LevelPlay";
 
-// Mediation is AppLovin MAX (see android/app/src/main/java/com/retroarcade/app/AppLovinPlugin.java).
-// AdMob is no longer used: the AdMob account this app was going to use was
-// barred/unavailable at launch, so ads shipped disabled for that release
-// and mediation moved to AppLovin as the fast-follow (see git history).
+// Mediation is Unity LevelPlay (see android/app/src/ads/java/com/retroarcade/app/LevelPlayPlugin.java).
+// AdMob was dropped because the AdMob account was unavailable, and AppLovin
+// MAX because it stopped accepting new publishers (see git history).
 //
-// Real credentials live in android/applovin.properties (gitignored, see
-// android/applovin.properties.example) and are read natively -- nothing
-// here ever needs a real SDK key or ad unit ID. Until that file is filled
-// in, AppLovin.initialize() resolves { available: false } and every method
-// below takes the same "ads unavailable" fallback path it already used for
-// unsupported platforms, so a build without real credentials is safe, not
-// broken.
+// Real credentials live in android/levelplay.properties (gitignored, see
+// android/levelplay.properties.example) and are read natively -- nothing
+// here ever needs a real app key or ad unit ID. Without that file the native
+// plugin isn't even compiled in, so LevelPlay.initialize() rejects and every
+// method below takes the same "ads unavailable" fallback path it already
+// used for unsupported platforms, so a build without credentials is safe,
+// not broken.
 //
 // iOS has no equivalent native plugin yet, so isSupported gates on the
 // Android platform specifically -- the iOS build ships ad-free for now.
@@ -43,7 +42,7 @@ class AdsManagerImpl {
   async initialize(): Promise<void> {
     if (!this.isSupported || this.ready) return;
     if (!this.initializing) {
-      this.initializing = AppLovin.initialize()
+      this.initializing = LevelPlay.initialize()
         .then(({ available }) => {
           this.ready = available;
         })
@@ -59,7 +58,7 @@ class AdsManagerImpl {
     await this.initialize();
     if (!this.ready) return;
     try {
-      await AppLovin.showBanner();
+      await LevelPlay.showBanner();
       this.bannerVisible = true;
     } catch {
       // No fill / network error; ignore, screen just has no banner this time.
@@ -71,7 +70,7 @@ class AdsManagerImpl {
     // banner that was already showing before the player purchased ad-free.
     if (Capacitor.getPlatform() !== "android" || !this.bannerVisible) return;
     try {
-      await AppLovin.hideBanner();
+      await LevelPlay.hideBanner();
       this.bannerVisible = false;
     } catch {
       // ignore
@@ -83,9 +82,10 @@ class AdsManagerImpl {
    * the reward (finished the video). Calls `onUnavailable` if the ad couldn't
    * be shown at all (no fill, no network, unsupported platform) or if the
    * user dismissed it before earning the reward, so callers can reset any
-   * "loading" UI state instead of getting stuck.
+   * "loading" UI state instead of getting stuck. `kind` picks the ad unit,
+   * so LevelPlay reports revenue per reward type.
    */
-  async showRewarded(onReward: () => void, onUnavailable?: () => void): Promise<void> {
+  async showRewarded(kind: RewardKind, onReward: () => void, onUnavailable?: () => void): Promise<void> {
     if (!this.isSupported) {
       onUnavailable?.();
       return;
@@ -97,7 +97,7 @@ class AdsManagerImpl {
     }
 
     try {
-      const { rewarded } = await AppLovin.showRewarded();
+      const { rewarded } = await LevelPlay.showRewarded({ kind });
       if (rewarded) {
         onReward();
       } else {
@@ -134,7 +134,7 @@ class AdsManagerImpl {
 
     this.lastInterstitialAt = Date.now();
     try {
-      await AppLovin.showInterstitial();
+      await LevelPlay.showInterstitial();
     } catch {
       // ignore; onDone still fires below so navigation isn't blocked.
     }

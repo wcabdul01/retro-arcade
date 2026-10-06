@@ -35,16 +35,6 @@
                 android:resource="@xml/file_paths"></meta-data>
         </provider>
 
-        <!-- AppLovin MAX SDK key, injected from android/applovin.properties
-             (gitignored, see android/applovin.properties.example) via the
-             applovinSdkKey manifest placeholder set in app/build.gradle.
-             Empty when that file is absent/unfilled: AppLovinPlugin.java
-             checks BuildConfig.APPLOVIN_SDK_KEY itself before ever calling
-             AppLovinSdk.initialize(), so an empty key here just means ads
-             stay off, not a crash. -->
-        <meta-data
-            android:name="applovin.sdk.key"
-            android:value="${applovinSdkKey}" />
     </application>
 
     <!-- Permissions -->

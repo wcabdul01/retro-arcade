@@ -37,6 +37,7 @@ android/.idea/
 !debug.keystore
 keystore.properties
 applovin.properties
+levelplay.properties
 
 # iOS
 ios/App/Pods/
