@@ -82,9 +82,6 @@ public class LevelPlayPlugin extends Plugin {
             }
             initStarted = true;
 
-            if (BuildConfig.META_ENABLED) {
-                configureMeta();
-            }
             if (BuildConfig.LEVELPLAY_TEST_SUITE) {
                 LevelPlay.setMetaData("is_test_suite", "enable");
             }
@@ -111,19 +108,6 @@ public class LevelPlayPlugin extends Plugin {
                 }
             });
         });
-    }
-
-    // Meta wants its data-processing options set before its SDK initializes;
-    // empty = Limited Data Use off. Reflection because the Meta SDK is only on
-    // the classpath when metaEnabled=true (see app/build.gradle).
-    private void configureMeta() {
-        try {
-            Class.forName("com.facebook.ads.AdSettings")
-                    .getMethod("setDataProcessingOptions", String[].class)
-                    .invoke(null, (Object) new String[] {});
-        } catch (Exception ignored) {
-            // Adapter missing or API changed; LevelPlay still runs without Meta.
-        }
     }
 
     private void resolveAvailability(PluginCall call) {

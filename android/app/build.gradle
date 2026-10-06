@@ -27,11 +27,6 @@ def levelPlay = { String key -> levelPlayProperties.getProperty(key, "").trim() 
 // scan matches "no data collected". AdsManager.ts already treats the missing
 // plugin as "ads unavailable".
 def adsEnabled = !levelPlay("appKey").isEmpty()
-// Meta Audience Network is bidding-only and reached through LevelPlay, so it
-// is just an adapter. Opt-in separately: the Meta SDK changes the Data safety
-// answers, and LevelPlay needs the Meta app/placement IDs in its dashboard
-// before the adapter does anything.
-def metaEnabled = adsEnabled && levelPlay("metaEnabled") == "true"
 
 android {
     namespace "com.retroarcade.app"
@@ -45,8 +40,8 @@ android {
         applicationId "com.retroarcade.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 4
-        versionName "1.2"
+        versionCode 5
+        versionName "1.3"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "LEVELPLAY_APP_KEY", "\"${levelPlay('appKey')}\""
         buildConfigField "String", "LEVELPLAY_BANNER_AD_UNIT_ID", "\"${levelPlay('bannerAdUnitId')}\""
@@ -55,7 +50,6 @@ android {
         buildConfigField "String", "LEVELPLAY_REWARDED_HINTS_AD_UNIT_ID", "\"${levelPlay('rewardedHintsAdUnitId')}\""
         buildConfigField "String", "LEVELPLAY_REWARDED_UNDOS_AD_UNIT_ID", "\"${levelPlay('rewardedUndosAdUnitId')}\""
         buildConfigField "boolean", "LEVELPLAY_TEST_SUITE", "${levelPlay('testSuite') == 'true'}"
-        buildConfigField "boolean", "META_ENABLED", "${metaEnabled}"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
              // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
@@ -118,10 +112,6 @@ dependencies {
         implementation "com.google.android.gms:play-services-appset:16.0.0"
         implementation "com.google.android.gms:play-services-ads-identifier:18.1.0"
         implementation "com.google.android.gms:play-services-basement:18.1.0"
-    }
-    if (metaEnabled) {
-        implementation "com.unity3d.ads-mediation:facebook-adapter:5.5.0"
-        implementation "com.facebook.android:audience-network-sdk:6.22.0"
     }
 }
 

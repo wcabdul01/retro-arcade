@@ -15,10 +15,6 @@ rewardedContinueAdUnitId=
 rewardedHintsAdUnitId=
 rewardedUndosAdUnitId=
 
-# Meta Audience Network via LevelPlay. Set to true only after the Meta app
-# and placement IDs are entered in LevelPlay (Setup > SDK Networks).
-metaEnabled=false
-
 # true opens LevelPlay's Test Suite right after init, to check each network
 # on a device. Never ship a release build with this on.
 testSuite=false

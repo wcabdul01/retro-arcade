@@ -1,7 +1,8 @@
-# Ads: Unity LevelPlay, Meta, AdMob appeal
+# Ads: Unity LevelPlay (1.3), on-hold networks, AdMob appeal
 
 Retro Arcade 1.2 (versionCode 4) is live on Google Play, built without ads.
-The next update adds ads through **Unity LevelPlay** (code: commit ef85f48).
+**1.3 (versionCode 5) adds Unity ads only: Unity LevelPlay + Unity Ads.**
+Meta and AdMob are on hold for a later update (see the end of this file).
 
 ## LevelPlay setup
 
@@ -19,8 +20,7 @@ The next update adds ads through **Unity LevelPlay** (code: commit ef85f48).
 | Retro Reward Hints | Rewarded | Hints x3 | Memory Match, Solitaire, Sudoku |
 | Retro Reward Undos | Rewarded | Undos x3 | Solitaire, Sudoku |
 
-Networks in the build: LevelPlay (ironSource Ads), Unity Ads, and Meta
-Audience Network when `metaEnabled=true`.
+Networks in the build: Unity LevelPlay (ironSource Ads) and Unity Ads.
 
 ## Before the first ads build runs on a phone
 
@@ -30,39 +30,55 @@ Audience Network when `metaEnabled=true`.
 - [ ] Device test with `testSuite=true` (opens the LevelPlay Test Suite),
   then set it back to `false`.
 
-## Release checklist (v1.3, versionCode 5)
+## Release checklist (1.3, versionCode 5)
 
-- [ ] Bump versionCode/versionName in `android/app/build.gradle`.
-- [ ] `docs/privacy-policy.html`: name Unity LevelPlay, Unity Ads (and Meta
-  if enabled) and the data they collect (advertising ID, device info,
-  approximate location, ad interactions).
-- [ ] Play Console: Contains ads = Yes; Advertising ID = Yes (advertising);
-  Data safety = Device or other IDs + App interactions + approximate
-  location, shared with ad partners.
-- [ ] app-ads.txt on the developer website with the LevelPlay / Unity
-  (and Meta) lines from their dashboards.
-- [ ] AppGallery: Contains ads = Yes for the Huawei build.
+- [x] versionCode 5 / versionName 1.3 in `android/app/build.gradle`.
+- [x] `docs/privacy-policy.html` names Unity LevelPlay + Unity Ads and the
+  data they collect. Goes live once pushed to GitHub (GitHub Pages).
+- [ ] Device test on a registered test phone (above).
+- [ ] Play Console > App content:
+  - **Ads:** Yes, my app contains ads.
+  - **Advertising ID:** Yes. Purposes: Advertising or marketing, Analytics,
+    Fraud prevention, security and compliance.
+  - **Target audience:** stays 13+ (matches COPPA "Not directed").
+  - **Data safety** (from Unity's official LevelPlay + Unity Ads answers):
+    - Collects or shares required data: **Yes**. Encrypted in transit:
+      **Yes**. Users can request deletion: **Yes** (via Unity's privacy policy).
+    - For every type below: collected **and** shared, not processed
+      ephemerally, **required**.
 
-## Meta Audience Network
+| Play category > type | Purposes |
+|---|---|
+| Location > Approximate location | Advertising or marketing, Analytics, App functionality, Fraud prevention, security and compliance |
+| Personal info > User IDs | App functionality |
+| Financial info > Purchase history | Advertising or marketing, Analytics |
+| App activity > App interactions | Advertising or marketing, Analytics, Fraud prevention, security and compliance |
+| App activity > Other actions | Advertising or marketing, Analytics, Fraud prevention, security and compliance |
+| App info and performance > Diagnostics | App functionality, Analytics, Fraud prevention, security and compliance |
+| Device or other IDs > Device or other IDs | Advertising or marketing, Analytics, App functionality, Fraud prevention, security and compliance |
 
-Meta is bidding-only and runs as an adapter inside LevelPlay.
-`metaEnabled=true` adds the LevelPlay Meta adapter (5.5.0) + Audience
-Network SDK (6.22.0) and sets Meta's data processing options (Limited
-Data Use off) before init. Default is off.
+- [ ] **app-ads.txt:** copy the lines LevelPlay shows for app-ads.txt and
+  publish them at the root of the developer website listed in Play Console
+  (`https://<site>/app-ads.txt`).
+- [ ] Upload `android/app/build/outputs/bundle/release/app-release.aab` with
+  the notes in `tools/store-assets/release-notes-1.3.md`.
+- [ ] AppGallery: Huawei APK 1.3 (`npm run cap:sync:huawei`, then
+  assembleRelease), **Contains ads: Yes**, privacy answers updated the same
+  way.
 
-1. [ ] Meta for Developers account: https://developers.facebook.com
-2. [ ] Monetization Manager: https://business.facebook.com/pub, then create a
-   business portfolio.
-3. [ ] Add the app (Android, Play Store URL). Meta reviews it.
-4. [ ] Create placements: Banner, Interstitial, Rewarded video. Note the
-   **App ID** and **placement IDs**.
-5. [ ] Add **Unity LevelPlay (ironSource)** as a bidding partner.
-6. [ ] Payout: payment method + tax form.
-7. [ ] LevelPlay > Setup > SDK Networks > Meta Audience Network: App ID at
-   app level, placement ID on each ad unit instance.
-8. Set `metaEnabled=true`, build, check with `testSuite=true`.
+## On hold for a later update: Meta, AdMob
 
-## AdMob
+Not in 1.3. Re-add each as a LevelPlay network (adapter + SDK pinned in
+pairs from github.com/ironsource-mobile/levelplay-android-adapters), and
+update the privacy policy, Data safety and app-ads.txt in the same release.
+
+**Meta Audience Network:** needs a Meta for Developers account, the app
+added in Monetization Manager (business.facebook.com/pub), Banner /
+Interstitial / Rewarded placements, LevelPlay added as bidding partner,
+then App ID + placement IDs in LevelPlay > Setup > SDK Networks. Last
+working code: commit ef85f48 (`metaEnabled` switch).
+
+### AdMob
 
 The AdSense/AdMob account is **closed by Google** for invalid traffic,
 most likely self-generated traffic on the 2018 Coursera practice blog
@@ -85,7 +101,7 @@ To do:
    Usually only one appeal is considered.
 3. [ ] Check Payments for a possible final payment.
 
-## 1. AdSense/AdMob invalid traffic appeal
+#### AdMob appeal answers
 
 Form: https://support.google.com/adsense/contact/appeal_form_adsense_admob
 
@@ -160,6 +176,7 @@ https://play.google.com/store/apps/details?id=com.retroarcade.app
 ## Sources
 - https://support.google.com/adsense/answer/57153
 - https://support.google.com/admob/answer/6197403
-- https://docs.unity.com/en-us/grow/levelplay/sdk/android/networks/guides/meta-audience-network
+- https://docs.unity.com/en-us/grow/levelplay/platform/legal-resources/google-data-safety-questionnaire
+- https://docs.unity.com/en-us/grow/ads/privacy/google-data-safety
 - https://github.com/ironsource-mobile/levelplay-android-adapters
 - https://ppc.land/google-introduces-new-mobile-app-inventory-and-fees-in-dv360/
