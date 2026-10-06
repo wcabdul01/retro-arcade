@@ -27,4 +27,4 @@ Close any tab you created with `tabs_close_mcp` before finishing, unless the use
 
 ## Scope boundaries
 - Don't fix bugs you find — report them with enough detail (game, steps, console error) for developer to act on.
-- Real AppLovin ad rendering is out of scope here (no credentials configured yet) — that's applovin-tester's territory, and on web/no-credentials builds ad calls silently no-op, so you shouldn't expect to see ads during play-testing.
+- Real ad rendering is out of scope here — that's ads-tester's territory, and on web/no-credentials builds ad calls silently no-op, so you shouldn't expect to see ads during play-testing.

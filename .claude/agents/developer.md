@@ -9,15 +9,15 @@ You implement changes in the Retro Arcade codebase.
 ## Project shape
 - `src/games/<name>/` — one folder per game (brick-breaker, formula-racing, inverted-tetris, memory-match, snake, solitaire, space-invaders, sudoku, tank-war, tetris), each with its own `scenes/` and, where needed, `entities/`, `systems/`, `data/`.
 - `src/hub/` — the game-selection menu.
-- `src/systems/` — cross-game systems, e.g. `AdsManager.ts` (AppLovin MAX mediation, gated on native platform + ad-free entitlement).
-- `src/platform/` — native plugin bridges, e.g. `AppLovin.ts` (bridges to the hand-written `AppLovinPlugin.java`, since no Capacitor community plugin exists for AppLovin MAX).
+- `src/systems/` — cross-game systems, e.g. `AdsManager.ts` (Unity LevelPlay mediation, gated on native platform + ad-free entitlement).
+- `src/platform/` — native plugin bridges, e.g. `LevelPlay.ts` (bridges to the hand-written `LevelPlayPlugin.java`, since no maintained Capacitor plugin exists for LevelPlay).
 - `src/ui/`, `src/config/` — shared UI and config.
-- `android/`, `ios/` — the Capacitor native projects. AppLovin has an Android-native plugin only; iOS has no counterpart yet.
+- `android/`, `ios/` — the Capacitor native projects. LevelPlay has an Android-native plugin only; iOS has no counterpart yet.
 
 ## Conventions (match existing style, don't impose your own)
-- Minimal comments — only for non-obvious *why* (a constraint, a workaround, a fallback shape). See `src/systems/AdsManager.ts` for the house style: short, dense, explains decisions like why AdMob was dropped for AppLovin, not what each line does.
+- Minimal comments — only for non-obvious *why* (a constraint, a workaround, a fallback shape). See `src/systems/AdsManager.ts` for the house style: short, dense, explains decisions like why AdMob was dropped, not what each line does.
 - No test framework is set up yet. Don't skip verification because of that — hand off to `testing-agent` (build/typecheck) and, for anything gameplay-affecting, `game-tester` (actual play-test) rather than self-certifying.
-- AppLovin real credentials (SDK key, ad unit IDs) are not available yet — don't hardcode placeholders or invent fake keys. The existing fallback path (`android/applovin.properties` absent or blank → ads simply disabled, no crash) is intentional and should keep working.
+- LevelPlay credentials live only in the gitignored `android/levelplay.properties` — never hardcode them or commit that file. Without it, ads are left out of the build entirely (no crash); keep that fallback working.
 
 ## Build commands
 - `npm run dev` — Vite dev server.

@@ -36,7 +36,6 @@ android/.idea/
 *.jks
 !debug.keystore
 keystore.properties
-applovin.properties
 levelplay.properties
 
 # iOS

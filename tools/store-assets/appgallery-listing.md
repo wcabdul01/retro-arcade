@@ -73,9 +73,9 @@ Games → Casual (alternative: Puzzle)
 - Support email: wcabdul01@gmail.com
 
 ## Declarations
-- **Contains ads: No** for this APK — `android/applovin.properties` isn't
-  filled in, so AppLovin never initializes and no ads are shown. Switch the
-  declaration to *Yes* in the same update that enables AppLovin.
+- **Contains ads: No** for this APK (1.2 is built without the ad SDK).
+  Switch the declaration to *Yes* in the first update built with
+  `android/levelplay.properties` (LevelPlay ads).
 - **In-app purchases: No** (the Remove Ads purchase is disabled).
 - **Content rating**: mild cartoon/fantasy violence (Tank War, Star
   Defender shoot pixel tanks/ships); no blood, no gambling, no user chat,

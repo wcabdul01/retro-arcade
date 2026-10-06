@@ -2,8 +2,7 @@ import { Capacitor } from "@capacitor/core";
 import { LevelPlay, type RewardKind } from "../platform/LevelPlay";
 
 // Mediation is Unity LevelPlay (see android/app/src/ads/java/com/retroarcade/app/LevelPlayPlugin.java).
-// AdMob was dropped because the AdMob account was unavailable, and AppLovin
-// MAX because it stopped accepting new publishers (see git history).
+// AdMob isn't used: the AdMob account is unavailable (see git history).
 //
 // Real credentials live in android/levelplay.properties (gitignored, see
 // android/levelplay.properties.example) and are read natively -- nothing

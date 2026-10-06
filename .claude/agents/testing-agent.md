@@ -21,5 +21,5 @@ You verify build-level and unit-level correctness for the Retro Arcade project.
 
 ## Scope boundaries
 - Don't play-test games in a browser — that's game-tester.
-- Don't touch AppLovin ad-credential concerns — that's applovin-tester.
+- Don't touch ad-credential concerns — that's ads-tester.
 - Don't implement new features — that's developer; you verify what it produced.

@@ -12,7 +12,7 @@ Listing copy: reuse `store-listing.md` (drop any "Play Store" wording).
 ## Apple App Store
 
 The iOS build ships **without ads** for now (AdsManager only runs on
-Android; the AppLovin iOS plugin is a planned follow-up). EXIT buttons are
+Android; a LevelPlay iOS plugin is a planned follow-up). EXIT buttons are
 hidden on iOS. iPhone-only, portrait-only.
 
 Built in the cloud by **Codemagic** (`codemagic.yaml`) — no Mac needed.
@@ -73,7 +73,7 @@ In App Store Connect → the app → iOS App 1.1:
 - **Age rating** questionnaire: *Infrequent/Mild Cartoon or Fantasy Violence*
   (Tank War, Star Defender) — everything else None.
 - **App Privacy**: *Data Not Collected* (the iOS build has no ads/analytics).
-  Update this when AppLovin iOS ads are added.
+  Update this when LevelPlay iOS ads are added.
 - Pick the TestFlight build → **Add for Review** → Submit. Review is usually
   24–48 h.
 
@@ -82,7 +82,7 @@ In App Store Connect → the app → iOS App 1.1:
 ## Huawei AppGallery
 
 Uses the same code and release key as the Play build (1.2 / versionCode 4),
-but built with `npm run cap:sync:huawei` so store links point to AppGallery. AppLovin ads work on Huawei phones without Google services (lower
+but built with `npm run cap:sync:huawei` so store links point to AppGallery. LevelPlay ads work on Huawei phones without Google services (lower
 revenue — no Google advertising ID).
 
 ### 1. Huawei Developer account — free
@@ -113,8 +113,8 @@ Afterwards, run `npm run cap:sync` again before any Play build.
    *App signing* off when uploading an APK signed with your own key.
 4. **Distribution**: countries/regions — **exclude Chinese mainland** (games
    there require an ICP filing + game licence). Content rating
-   questionnaire: mild cartoon violence. Ads declaration: *No* while
-   `applovin.properties` is empty (see `appgallery-listing.md`).
+   questionnaire: mild cartoon violence. Ads declaration: *No* until a
+   build with LevelPlay ads ships (see `appgallery-listing.md`).
 5. Submit for review — typically 3–5 working days for games.
 
 ---
@@ -130,6 +130,4 @@ Per-game tap/key scripts live in `screenshot_scenarios.mjs`; captions and
 order in `compose_screenshots.py`.
 
 ## Later
-- AppLovin iOS plugin (Swift) + App Tracking Transparency prompt + SKAdNetwork IDs.
-- Fill `android/applovin.properties` — ads are currently off on Android too
-  (the file doesn't exist in this checkout).
+- LevelPlay iOS plugin (Swift) + App Tracking Transparency prompt + SKAdNetwork IDs.
