@@ -209,14 +209,20 @@ export class GameScene extends Phaser.Scene {
     this.autoRunning = true;
     this.clearSelection();
     this.updateAutoButton();
-    // 52 foundation moves plus at most a couple of passes through the deck per
-    // card; the cap only guards against a logic slip looping forever.
-    let stepsLeft = 52 * 60;
+    // Drawing must surface a playable card within one full pass of the deck;
+    // if it doesn't, stop rather than cycle forever.
+    let drawsWithoutProgress = 0;
     const timer = this.time.addEvent({
       delay: AUTO_MOVE_MS,
       loop: true,
       callback: () => {
-        const step = this.ended || stepsLeft-- <= 0 ? null : nextAutoStep(this.board);
+        let step = this.ended ? null : nextAutoStep(this.board);
+        if (step?.kind === "draw") {
+          drawsWithoutProgress += 1;
+          if (drawsWithoutProgress > this.board.stock.length + this.board.waste.length + 2) step = null;
+        } else {
+          drawsWithoutProgress = 0;
+        }
         if (!step) {
           timer.remove();
           this.autoRunning = false;

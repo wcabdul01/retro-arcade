@@ -68,6 +68,19 @@ describe("solitaire auto-complete", () => {
     board.foundations.forEach((pile, f) => expect(pile.every((c) => c.suit === SUITS[f])).toBe(true));
   });
 
+  it("works when the player started suits on other suits' foundation piles", () => {
+    const board = solvedLayout();
+    // Columns end with A♠, A♥, A♣, A♦; put them on piles in a different order.
+    board.foundations[0].push(board.tableau[3].pop()!); // ♦ on the ♠ pile
+    board.foundations[1].push(board.tableau[2].pop()!); // ♣ on the ♥ pile
+    board.foundations[2].push(board.tableau[1].pop()!); // ♥ on the ♦ pile
+    board.foundations[3].push(board.tableau[0].pop()!); // ♠ on the ♣ pile
+    expect(canAutoComplete(board)).toBe(true);
+    runAutoComplete(board);
+    expect(isWon(board)).toBe(true);
+    board.foundations.forEach((pile) => expect(new Set(pile.map((c) => c.suit)).size).toBe(1));
+  });
+
   it("is offered with cards still in the stock and waste, and finishes the deal", () => {
     const board = solvedLayout();
     // Low cards (needed first) buried in the stock and waste.

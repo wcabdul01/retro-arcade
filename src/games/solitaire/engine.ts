@@ -104,6 +104,14 @@ export type AutoStep =
   | { kind: "waste"; foundation: number }
   | { kind: "draw" };
 
+/** Foundation pile `card` can go on. Players may start any suit on any empty
+ * pile, so search all four (an Ace prefers its own suit's labelled pile). */
+export function findFoundationFor(card: Card, foundations: Card[][]): number {
+  const own = foundationIndex(card.suit);
+  if (canPlaceOnFoundation(card, foundations[own])) return own;
+  return foundations.findIndex((pile) => canPlaceOnFoundation(card, pile));
+}
+
 /** Next auto-complete step: the lowest-rank card that can go to a foundation
  * (tableau tops or the waste top), otherwise draw/recycle the stock. */
 export function nextAutoStep(board: Board): AutoStep | null {
@@ -112,8 +120,8 @@ export function nextAutoStep(board: Board): AutoStep | null {
   let bestRank = Infinity;
   const consider = (card: Card | undefined, step: (foundation: number) => AutoStep) => {
     if (!card || card.rank >= bestRank) return;
-    const foundation = foundationIndex(card.suit);
-    if (!canPlaceOnFoundation(card, board.foundations[foundation])) return;
+    const foundation = findFoundationFor(card, board.foundations);
+    if (foundation < 0) return;
     best = step(foundation);
     bestRank = card.rank;
   };
