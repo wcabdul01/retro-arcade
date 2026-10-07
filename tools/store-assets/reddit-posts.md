@@ -31,7 +31,7 @@ Retro Arcade bundles 10 classic arcade games into one small app with a green-scr
 - Snake
 - Tank War
 - Racing (endless, with boost)
-- Star Defender (space invaders style)
+- Star Defender (alien-wave space shooter)
 - Memory Match (5 difficulties)
 - Sudoku
 - Solitaire

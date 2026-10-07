@@ -29,12 +29,12 @@ Base hashtags (use 3-5 per post):
 `#retrogaming #indiegame #pixelart #androidgames #mobilegames #gamedev #indiedev #retro`
 
 ### Day 1: Star Defender (`stardefender.mp4`)
-Caption: Space invaders, but make it Game Boy green 👾 One of 10 retro games in my free Android app. Plays offline!
-Hashtags: #retrogaming #spaceinvaders #indiegame #androidgames #pixelart
+Caption: A classic alien-wave space shooter, in retro handheld green 👾 One of 10 retro games in my free Android app. Plays offline!
+Hashtags: #retrogaming #spaceshooter #indiegame #androidgames #pixelart
 
 ### Day 2: Block Drop (`blockdrop.mp4`)
 Caption: The classic falling-block puzzle, in a 4-shade green screen 🟩 How long can you last?
-Hashtags: #retrogaming #puzzlegame #indiegame #androidgames #gameboy
+Hashtags: #retrogaming #puzzlegame #indiegame #androidgames #retrohandheld
 
 ### Day 3: Racing (`racing.mp4`)
 Caption: Endless retro racing: dodge traffic, hold BOOST, chase the high score 🏎️ Free and offline on Android.
@@ -73,7 +73,7 @@ https://play.google.com/store/apps/details?id=com.retroarcade.app
 It's #ScreenshotSaturday! Here's Star Defender from Retro Arcade: wave after wave of invaders in 4 shades of green 👾 #indiedev #gamedev #pixelart
 
 **Follow-up idea:**
-What classic game should I add next to Retro Arcade? Pac-style maze? Pong? Frogger-style crossing? Reply and I'll build the most requested one 👇 #indiedev
+What classic game should I add next to Retro Arcade? A maze chase? Paddle tennis? A road-crossing game? Reply and I'll build the most requested one 👇 #indiedev
 
 (Only post the last one if you'd actually consider building the winner.)
 
@@ -143,7 +143,7 @@ comment on others' posts too.
 **Title:** I made a retro green-screen arcade collection for Android: 10 classic games, offline, free
 
 **Body:**
-Hi! I'm an indie dev and I built Retro Arcade: Snake, Brick Breaker, a falling-block puzzle (plus a version where rows rise from below), Tank War, Racing, a space-invaders-style shooter, Memory Match, Sudoku and Solitaire, all in a 4-shade green handheld look.
+Hi! I'm an indie dev and I built Retro Arcade: Snake, Brick Breaker, a falling-block puzzle (plus a version where rows rise from below), Tank War, Racing, an alien-wave space shooter, Memory Match, Sudoku and Solitaire, all in a 4-shade green handheld look.
 
 It runs fully offline with no account. It's free with a small menu banner and optional reward ads.
 

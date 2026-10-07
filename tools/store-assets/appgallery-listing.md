@@ -73,13 +73,18 @@ Games → Casual (alternative: Puzzle)
 - Support email: wcabdul01@gmail.com
 
 ## Declarations
-- **Contains ads: No** for this APK (1.2 is built without the ad SDK).
-  Switch the declaration to *Yes* in the first update built with
-  `android/levelplay.properties` (LevelPlay ads).
+- **Contains ads: Yes** from 1.3.1 (Unity LevelPlay + Unity Ads: menu
+  banner, interstitial when leaving a game, optional reward videos).
+  1.2 was ad-free ("No").
+- **Personal data (1.3.1+): Yes, collected by the ad SDK (Unity)**:
+  device/advertising identifiers, approximate location (from IP), ad
+  interactions, app diagnostics. Used for advertising, analytics and fraud
+  prevention; shared with Unity. The developer collects nothing directly.
+  Same answers as Play's Data safety (see `ads-levelplay.md`).
 - **In-app purchases: No** (the Remove Ads purchase is disabled).
 - **Content rating**: mild cartoon/fantasy violence (Tank War, Star
-  Defender shoot pixel tanks/ships); no blood, no gambling, no user chat,
-  no location, no personal data collected.
+  Defender shoot pixel tanks/ships); no blood, no gambling, no user chat.
+  Ads are not targeted at children (Unity/LevelPlay COPPA: "Not directed").
 - **Distribution**: all regions **except Chinese mainland** (games there
   need an ICP filing + a game publishing licence).
 - **Price**: Free.
