@@ -361,8 +361,8 @@ export class GameScene extends Phaser.Scene {
   }
 
   private updateResourceText(): void {
-    this.hintButtonText.setText(this.hintsLeft > 0 ? `${this.hintsLeft}` : "WATCH AD");
-    this.undoButtonText.setText(this.undosLeft > 0 ? `${this.undosLeft}` : "WATCH AD");
+    this.hintButtonText.setText(this.hintsLeft > 0 ? `${this.hintsLeft}` : "AD");
+    this.undoButtonText.setText(this.undosLeft > 0 ? `${this.undosLeft}` : "AD");
   }
 
   private useHint(): void {

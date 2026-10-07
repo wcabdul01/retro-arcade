@@ -199,7 +199,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private updateResourceText(): void {
-    this.hintButtonText.setText(this.hintsLeft > 0 ? `${this.hintsLeft}` : "WATCH AD");
+    this.hintButtonText.setText(this.hintsLeft > 0 ? `${this.hintsLeft}` : "AD");
   }
 
   private useHint(): void {
