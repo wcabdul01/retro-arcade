@@ -271,12 +271,13 @@ export class GameScene extends Phaser.Scene {
   }
 
   private updateResourceText(): void {
-    this.hintButtonText.setText(this.hintsLeft > 0 ? `${this.hintsLeft}` : "AD");
-    this.undoButtonText.setText(this.undosLeft > 0 ? `${this.undosLeft}` : "AD");
+    this.hintButtonText.setText(this.hintsLeft > 0 || AdsManager.isAdFree ? `${this.hintsLeft}` : "AD");
+    this.undoButtonText.setText(this.undosLeft > 0 || AdsManager.isAdFree ? `${this.undosLeft}` : "AD");
   }
 
   private promptForAd(kind: "hint" | "undo"): void {
-    if (this.adRequestInProgress) return;
+    // Remove Ads owners get no watch-an-ad refills: hints/undos stop at 0.
+    if (this.adRequestInProgress || AdsManager.isAdFree) return;
     this.adRequestInProgress = true;
     AdsManager.showRewarded(
       kind === "hint" ? "hints" : "undos",

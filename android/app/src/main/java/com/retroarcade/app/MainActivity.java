@@ -16,7 +16,9 @@ public class MainActivity extends BridgeActivity {
     protected void onCreate(Bundle savedInstanceState) {
         // Must run before super.onCreate() -- Capacitor builds its plugin
         // registry during Bridge init, which happens inside onCreate().
-        registerAdsPlugin();
+        registerOptionalPlugins();
+        // One BillingPlugin per store (src/play or src/huawei), always compiled in.
+        registerPlugin(BillingPlugin.class);
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         hideSystemBars();
@@ -24,16 +26,23 @@ public class MainActivity extends BridgeActivity {
 
     /**
      * LevelPlayPlugin is only compiled in when android/levelplay.properties has
-     * an app key (see app/build.gradle), so it's looked up by name. In an
-     * ad-free build the JS side gets "not implemented" and AdsManager.ts
-     * treats that as ads unavailable.
+     * an app key, and PlayGamesPlugin only when a Play Games project ID is set
+     * (see app/build.gradle), so they're looked up by name. When one is
+     * missing the JS side gets "not implemented" and treats that as ads /
+     * cloud save unavailable.
      */
     @SuppressWarnings("unchecked")
-    private void registerAdsPlugin() {
+    private void registerOptionalPlugins() {
         try {
             registerPlugin((Class<? extends Plugin>) Class.forName("com.retroarcade.app.LevelPlayPlugin"));
         } catch (ClassNotFoundException ignored) {
             // Ad-free build.
+        }
+        // Cloud save: only in the Play build once a Play Games project ID is set.
+        try {
+            registerPlugin((Class<? extends Plugin>) Class.forName("com.retroarcade.app.PlayGamesPlugin"));
+        } catch (ClassNotFoundException ignored) {
+            // Device-only saves.
         }
     }
 

@@ -3,9 +3,7 @@ import type { GameId } from "../hub/gameRegistry";
 export interface SaveData {
   highScores: Partial<Record<GameId, number>>;
   progress: Partial<Record<GameId, unknown>>;
-  // Placeholder entitlement flag for the $10 "remove ads" purchase — set by
-  // a mock buy button for now (see SettingsScene) until real Play Billing
-  // is wired in. Also gates offline play: see BootScene.
+  // Owns the one-time "Remove Ads" purchase (see systems/Purchases.ts).
   noAdsPurchased: boolean;
 }
 

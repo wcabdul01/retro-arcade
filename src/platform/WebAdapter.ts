@@ -1,6 +1,7 @@
 import { Preferences } from "@capacitor/preferences";
 import type { PlatformAdapter, SaveData } from "./PlatformAdapter";
 import { DEFAULT_SAVE_DATA } from "./PlatformAdapter";
+import { CloudSave } from "../systems/CloudSave";
 
 const KEY = "retro-arcade-save";
 
@@ -30,5 +31,6 @@ export class WebAdapter implements PlatformAdapter {
 
   async saveData(data: SaveData): Promise<void> {
     await Preferences.set({ key: KEY, value: JSON.stringify(data) });
+    CloudSave.push(data);
   }
 }

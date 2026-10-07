@@ -28,6 +28,27 @@ def levelPlay = { String key -> levelPlayProperties.getProperty(key, "").trim() 
 // plugin as "ads unavailable".
 def adsEnabled = !levelPlay("appKey").isEmpty()
 
+// Which store's billing SDK goes in: Google Play by default, Huawei IAP with
+// `-Pstore=huawei` (the AppGallery APK; pair it with `npm run cap:sync:huawei`).
+// Each store's BillingPlugin.java lives in its own source dir, so the Play
+// build never contains HMS code and the Huawei build never contains Play Billing.
+def store = (project.findProperty("store") ?: "play").toString()
+def isHuawei = store == "huawei"
+if (!(store in ["play", "huawei"])) {
+    throw new GradleException("Unknown -Pstore=${store} (use play or huawei)")
+}
+// AppGallery Connect app ID, read by HMS Core from the manifest
+// (com.huawei.hms.client.appid), so no agconnect-services.json is needed.
+def appGalleryAppId = "119204471"
+
+// Google Play Games Saved Games (cloud save, Play build only). Paste the
+// numeric Project ID from Play Console > Grow users > Play Games Services >
+// Setup and management > Configuration. While it's blank the Play Games SDK
+// and PlayGamesPlugin.java (src/playgames/java) are left out and the game
+// saves on the device only, as before.
+def playGamesProjectId = ""
+def playGamesEnabled = !isHuawei && !playGamesProjectId.isEmpty()
+
 android {
     namespace "com.retroarcade.app"
     compileSdk rootProject.ext.compileSdkVersion
@@ -43,6 +64,8 @@ android {
         versionCode 6
         versionName "1.4"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        manifestPlaceholders = [hmsAppId: isHuawei ? "appid=${appGalleryAppId}" : ""]
+        resValue "string", "game_services_project_id", playGamesProjectId
         buildConfigField "String", "LEVELPLAY_APP_KEY", "\"${levelPlay('appKey')}\""
         buildConfigField "String", "LEVELPLAY_BANNER_AD_UNIT_ID", "\"${levelPlay('bannerAdUnitId')}\""
         buildConfigField "String", "LEVELPLAY_INTERSTITIAL_AD_UNIT_ID", "\"${levelPlay('interstitialAdUnitId')}\""
@@ -71,6 +94,10 @@ android {
             if (adsEnabled) {
                 java.srcDirs += 'src/ads/java'
             }
+            java.srcDirs += isHuawei ? 'src/huawei/java' : 'src/play/java'
+            if (playGamesEnabled) {
+                java.srcDirs += 'src/playgames/java'
+            }
         }
     }
     buildTypes {
@@ -86,6 +113,9 @@ repositories {
     flatDir{
         dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
     }
+    if (isHuawei) {
+        maven { url 'https://developer.huawei.com/repo/' }
+    }
 }
 
 dependencies {
@@ -98,6 +128,17 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
     implementation project(':capacitor-cordova-android-plugins')
+
+    // Remove Ads purchase (see BillingPlugin.java in src/play or src/huawei).
+    // Play Billing 8+ is required for app updates since 31 Aug 2026.
+    if (isHuawei) {
+        implementation "com.huawei.hms:iap:6.16.6.305"
+    } else {
+        implementation "com.android.billingclient:billing:9.1.0"
+    }
+    if (playGamesEnabled) {
+        implementation "com.google.android.gms:play-services-games-v2:22.1.0"
+    }
 
     // Unity LevelPlay (see android/app/src/ads/java/com/retroarcade/app/LevelPlayPlugin.java).
     // Adapter and network SDK versions are pinned in pairs from the adapter

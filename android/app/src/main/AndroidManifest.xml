@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- tools:replace: the Huawei IAP SDK sets allowBackup="false"; keep the app's own value. -->
     <application
+        tools:replace="android:allowBackup"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -34,6 +37,15 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths"></meta-data>
         </provider>
+
+        <!-- AppGallery app ID for Huawei IAP; empty in the Google Play build (see app/build.gradle). -->
+        <meta-data
+            android:name="com.huawei.hms.client.appid"
+            android:value="${hmsAppId}" />
+        <!-- Play Games project ID for cloud save; unused until set in app/build.gradle. -->
+        <meta-data
+            android:name="com.google.android.gms.games.APP_ID"
+            android:value="@string/game_services_project_id" />
 
     </application>
 

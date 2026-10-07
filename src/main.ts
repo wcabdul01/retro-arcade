@@ -4,7 +4,6 @@ import { applyResponsiveScale } from "./platform/responsiveScale";
 import { BootScene } from "./hub/BootScene";
 import { HubScene } from "./hub/HubScene";
 import { IntroScene } from "./hub/IntroScene";
-import { OfflineBlockScene } from "./hub/OfflineBlockScene";
 import { GameScene as BrickBreakerGameScene } from "./games/brick-breaker/scenes/GameScene";
 import { UIScene as BrickBreakerUIScene } from "./games/brick-breaker/scenes/UIScene";
 import { GameOverScene as BrickBreakerGameOverScene } from "./games/brick-breaker/scenes/GameOverScene";
@@ -88,7 +87,6 @@ function bootGame(): void {
     BootScene,
     HubScene,
     IntroScene,
-    OfflineBlockScene,
     BrickBreakerGameScene,
     BrickBreakerUIScene,
     BrickBreakerGameOverScene,

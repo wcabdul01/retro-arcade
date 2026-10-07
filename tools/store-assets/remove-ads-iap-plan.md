@@ -28,7 +28,29 @@ Huawei (AppGallery Connect → Retro Arcade):
 7. [ ] Project settings → download `agconnect-services.json`, send it.
 8. [ ] Users and permissions → Sandbox testing → add your Huawei ID.
 
-## Implementation plan (code)
+## Status (2026-10-08): code done, waiting on store setup
+Built and phone-tested (Play build): lobby SETTINGS + REMOVE ADS row,
+Settings RESTORE PURCHASES ("NO PURCHASES FOUND" from Play), and REMOVE ADS
+reaches Play and reports "This item isn't available right now" until
+`remove_ads` exists in Play Console. Version stays 1.4 (code 6), unsubmitted.
+
+Builds:
+- Play AAB: `npm run cap:sync`, `cd android && gradlew bundleRelease`
+  -> android/app/build/outputs/bundle/release/app-release.aab (Play Billing 9.1.0, no HMS)
+- Huawei APK: `npm run apk:huawei` (= cap:sync:huawei + `gradlew assembleRelease -Pstore=huawei`),
+  copy to android/app/build/outputs/huawei/retro-arcade-1.4-huawei.apk, then `npm run cap:sync`
+  again (HMS IAP 6.16.6.305, no Play Billing). App ID 119204471 is in the manifest, so
+  no agconnect-services.json is needed.
+- Play Games cloud save: paste the numeric Project ID into
+  `playGamesProjectId` in android/app/build.gradle and rebuild. Blank = device-only saves.
+
+Design notes:
+- The purchase itself is not stored in the cloud save: the store is the record
+  (restored at every launch; a refund removes it). Cloud save holds high scores
+  and Brick Breaker level progress, merged best-of-both (src/platform/mergeSaves.ts).
+- Buyers: no banner/interstitials, no "Watch Ad: Continue", hint/undo stop at 0.
+
+## Implementation (done)
 - Native Capacitor plugin `Billing`, same pattern as `LevelPlayPlugin`:
   - Play: `android/app/src/play/java/.../BillingPlugin.java`, Play Billing
     Library 8+ (v8 required for updates since 31 Aug 2026; latest 9.1.0).

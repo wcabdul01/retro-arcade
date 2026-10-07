@@ -10,6 +10,7 @@
     "cap:sync": "npm run build && npx cap sync",
     "build:huawei": "tsc -b && vite build --mode huawei",
     "cap:sync:huawei": "npm run build:huawei && npx cap sync android",
+    "apk:huawei": "npm run cap:sync:huawei && cd android && gradlew assembleRelease -Pstore=huawei",
     "test": "vitest run",
     "test:watch": "vitest"
   },

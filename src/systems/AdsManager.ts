@@ -28,8 +28,14 @@ class AdsManagerImpl {
     return Capacitor.getPlatform() === "android" && !this.adFree;
   }
 
-  /** Set once at boot from the purchased "remove ads" entitlement. When true,
-   * every method below becomes a no-op (or calls its fallback callback
+  /** True once the player owns Remove Ads. Scenes check it to hide every
+   * "watch an ad" option, not just to skip showing the ad. */
+  get isAdFree(): boolean {
+    return this.adFree;
+  }
+
+  /** Set at boot and by Purchases.ts from the "remove ads" entitlement. When
+   * true, every method below becomes a no-op (or calls its fallback callback
    * immediately) so ad-free players never trigger a network call for ads. */
   setAdFree(adFree: boolean): void {
     this.adFree = adFree;

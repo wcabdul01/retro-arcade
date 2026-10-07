@@ -34,6 +34,9 @@ export function createButton(
     if (text.active) text.setText(label);
   });
 
+  // Lets callers relabel the button later (e.g. once a store price loads).
+  bg.setData("label", text);
+
   bg.on("pointerover", () => bg.setFillStyle(GB.DARKEST));
   bg.on("pointerout", () => bg.setFillStyle(GB.DARK));
   bg.on("pointerdown", () => {

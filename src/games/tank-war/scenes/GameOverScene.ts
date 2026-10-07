@@ -41,7 +41,8 @@ export class GameOverScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     let nextY = 420;
-    if (!data.win) {
+    // Remove Ads owners never see watch-an-ad options.
+    if (!data.win && !AdsManager.isAdFree) {
       const adText = this.add
         .text(GAME_WIDTH / 2, nextY - 34, "", { fontFamily: FONT_FAMILY, fontSize: "8px", color: "#545a41" })
         .setOrigin(0.5);

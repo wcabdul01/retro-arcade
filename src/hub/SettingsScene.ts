@@ -6,6 +6,7 @@ import { sfx } from "../systems/SoundManager";
 import { vibrate } from "../systems/Haptics";
 import { ImpactStyle } from "@capacitor/haptics";
 import { canOpenStorePage, openFeedbackEmail, openStorePage } from "../systems/Store";
+import { Purchases } from "../systems/Purchases";
 
 export class SettingsScene extends Phaser.Scene {
   constructor() {
@@ -15,22 +16,23 @@ export class SettingsScene extends Phaser.Scene {
   create(): void {
     const centerY = GAME_HEIGHT / 2;
 
-    this.add.rectangle(GAME_WIDTH / 2, centerY, GAME_WIDTH, GAME_HEIGHT, GB.LIGHTEST, 0.98);
-    this.add.rectangle(GAME_WIDTH / 2, centerY, 300, 540, GB.LIGHT).setStrokeStyle(4, GB.DARKEST);
+    // Interactive so taps on the backdrop don't reach the Hub/Pause scene below.
+    this.add.rectangle(GAME_WIDTH / 2, centerY, GAME_WIDTH, GAME_HEIGHT, GB.LIGHTEST, 0.98).setInteractive();
+    this.add.rectangle(GAME_WIDTH / 2, centerY, 300, 640, GB.LIGHT).setStrokeStyle(4, GB.DARKEST);
 
     this.add
-      .text(GAME_WIDTH / 2, centerY - 225, "SETTINGS", { fontFamily: FONT_FAMILY, fontSize: "18px", color: "#16170f" })
+      .text(GAME_WIDTH / 2, centerY - 275, "SETTINGS", { fontFamily: FONT_FAMILY, fontSize: "18px", color: "#16170f" })
       .setOrigin(0.5);
 
     this.createToggle(
-      centerY - 155,
+      centerY - 205,
       "SOUND",
       () => Settings.soundEnabled,
       () => Settings.setSoundEnabled(!Settings.soundEnabled)
     );
 
     this.createToggle(
-      centerY - 85,
+      centerY - 135,
       "VIBRATION",
       () => Settings.vibrationEnabled,
       () => {
@@ -39,25 +41,38 @@ export class SettingsScene extends Phaser.Scene {
       }
     );
 
-    this.createCycleControl(centerY - 15, "CONTRAST", () => `${Settings.contrastPercent}%`, () => Settings.cycleContrast());
-
-    // "Remove Ads" purchase row intentionally omitted for v1 launch — it was
-    // wired to a placeholder (Purchases.buyNoAds) that granted the
-    // entitlement for free with no real payment. Re-add once real Google
-    // Play Billing is implemented (see Purchases.ts).
+    this.createCycleControl(centerY - 65, "CONTRAST", () => `${Settings.contrastPercent}%`, () => Settings.cycleContrast());
 
     // Web builds have no store listing to open, so RATE only shows on native.
     if (canOpenStorePage()) {
-      createButton(this, GAME_WIDTH / 2, centerY + 55, "RATE THIS APP", () => {
+      createButton(this, GAME_WIDTH / 2, centerY + 5, "RATE THIS APP", () => {
         void openStorePage();
       });
     }
 
-    createButton(this, GAME_WIDTH / 2, centerY + 125, "SEND FEEDBACK", () => {
+    createButton(this, GAME_WIDTH / 2, centerY + 75, "SEND FEEDBACK", () => {
       void openFeedbackEmail();
     });
 
-    createButton(this, GAME_WIDTH / 2, centerY + 195, "BACK", () => {
+    // Remove Ads is bought from the lobby; this gets it back after a
+    // reinstall or on a new phone (also checked automatically at launch).
+    if (Purchases.isSupported) {
+      const status = this.add
+        .text(GAME_WIDTH / 2, centerY + 290, "", { fontFamily: FONT_FAMILY, fontSize: "8px", color: "#16170f", align: "center" })
+        .setOrigin(0.5);
+      let restoring = false;
+      createButton(this, GAME_WIDTH / 2, centerY + 145, "RESTORE PURCHASES", async () => {
+        if (restoring) return;
+        restoring = true;
+        status.setText("CHECKING...");
+        const { owned, checked } = await Purchases.restore(this.registry);
+        restoring = false;
+        if (!status.active) return;
+        status.setText(owned ? "ADS REMOVED" : checked ? "NO PURCHASES FOUND" : "STORE UNAVAILABLE, TRY LATER");
+      });
+    }
+
+    createButton(this, GAME_WIDTH / 2, centerY + 215, "BACK", () => {
       this.scene.stop();
     });
   }

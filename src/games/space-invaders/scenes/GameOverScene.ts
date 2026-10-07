@@ -38,30 +38,35 @@ export class GameOverScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    const adText = this.add
-      .text(GAME_WIDTH / 2, 386, "", { fontFamily: FONT_FAMILY, fontSize: "8px", color: "#545a41" })
-      .setOrigin(0.5);
-    createButton(this, GAME_WIDTH / 2, 420, "Watch Ad: Continue", () => {
-      if (this.continuing) return;
-      this.continuing = true;
-      AdsManager.showRewarded(
-        "continue",
-        () => {
-          this.scene.start("SpaceInvaders.Game", { score: data.score, wave: data.wave, lives: 1 });
-        },
-        () => {
-          this.continuing = false;
-          adText.setText("Ad not available right now");
-        }
-      );
-    });
+    let nextY = 420;
+    // Remove Ads owners never see watch-an-ad options.
+    if (!AdsManager.isAdFree) {
+      const adText = this.add
+        .text(GAME_WIDTH / 2, nextY - 34, "", { fontFamily: FONT_FAMILY, fontSize: "8px", color: "#545a41" })
+        .setOrigin(0.5);
+      createButton(this, GAME_WIDTH / 2, nextY, "Watch Ad: Continue", () => {
+        if (this.continuing) return;
+        this.continuing = true;
+        AdsManager.showRewarded(
+          "continue",
+          () => {
+            this.scene.start("SpaceInvaders.Game", { score: data.score, wave: data.wave, lives: 1 });
+          },
+          () => {
+            this.continuing = false;
+            adText.setText("Ad not available right now");
+          }
+        );
+      });
+      nextY += 70;
+    }
 
-    createButton(this, GAME_WIDTH / 2, 490, "Play Again", () => {
+    createButton(this, GAME_WIDTH / 2, nextY, "Play Again", () => {
       this.scene.start("SpaceInvaders.Game");
     });
-    createButton(this, GAME_WIDTH / 2, 560, "Main Menu", () => {
+    createButton(this, GAME_WIDTH / 2, nextY + 70, "Main Menu", () => {
       this.scene.start("Hub");
     });
-    addGameOverExtras(this, "space-invaders", data.score, 630);
+    addGameOverExtras(this, "space-invaders", data.score, nextY + 140);
   }
 }
