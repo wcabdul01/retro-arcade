@@ -11,7 +11,7 @@ import {
   canPlaceOnTableau,
   isRedGroup,
   isWon,
-  nextAutoMove,
+  nextAutoStep,
   suitSymbol,
 } from "../engine";
 import { CardView } from "../entities/CardView";
@@ -209,20 +209,30 @@ export class GameScene extends Phaser.Scene {
     this.autoRunning = true;
     this.clearSelection();
     this.updateAutoButton();
+    // 52 foundation moves plus at most a couple of passes through the deck per
+    // card; the cap only guards against a logic slip looping forever.
+    let stepsLeft = 52 * 60;
     const timer = this.time.addEvent({
       delay: AUTO_MOVE_MS,
       loop: true,
       callback: () => {
-        const move = this.ended ? null : nextAutoMove(this.board);
-        if (!move) {
+        const step = this.ended || stepsLeft-- <= 0 ? null : nextAutoStep(this.board);
+        if (!step) {
           timer.remove();
           this.autoRunning = false;
           this.updateAutoButton();
           return;
         }
-        const column = this.board.tableau[move.col];
-        this.selection = { source: "tableau", col: move.col, cards: [column[column.length - 1]] };
-        this.tryMoveSelectionToFoundation(move.foundation);
+        if (step.kind === "draw") {
+          this.drawFromStock(true);
+        } else if (step.kind === "waste") {
+          this.selection = { source: "waste", cards: [this.board.waste[this.board.waste.length - 1]] };
+          this.tryMoveSelectionToFoundation(step.foundation);
+        } else {
+          const column = this.board.tableau[step.col];
+          this.selection = { source: "tableau", col: step.col, cards: [column[column.length - 1]] };
+          this.tryMoveSelectionToFoundation(step.foundation);
+        }
       },
     });
   }
@@ -478,8 +488,8 @@ export class GameScene extends Phaser.Scene {
     return true;
   }
 
-  private drawFromStock(): void {
-    if (this.ended || this.autoRunning) return;
+  private drawFromStock(fromAutoComplete = false): void {
+    if (this.ended || (this.autoRunning && !fromAutoComplete)) return;
     this.clearSelection();
     if (this.board.stock.length > 0) {
       const card = this.board.stock.pop();

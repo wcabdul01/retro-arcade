@@ -91,31 +91,34 @@ export function isWon(board: Board): boolean {
   return board.foundations.every((f) => f.length === 13);
 }
 
-/** The stock and waste are used up and every tableau card is face up, so the
- * deal can no longer be lost: what's left is moving cards to the foundations.
- * (The lowest remaining card always sits on top of its column, because face-up
- * runs descend, so a foundation move is always available until the win.) */
+/** Every tableau card is face up, so the deal can no longer be lost. The lowest
+ * card still in play is always reachable: on top of its column (face-up runs
+ * descend) or in the stock/waste, which draw-one with unlimited passes cycles
+ * through. So foundation moves plus drawing always finish the game. */
 export function canAutoComplete(board: Board): boolean {
-  return (
-    !isWon(board) &&
-    board.stock.length === 0 &&
-    board.waste.length === 0 &&
-    board.tableau.every((column) => column.every((card) => card.faceUp))
-  );
+  return !isWon(board) && board.tableau.every((column) => column.every((card) => card.faceUp));
 }
 
-/** Tableau column whose top card can go to a foundation, lowest rank first. */
-export function nextAutoMove(board: Board): { col: number; foundation: number } | null {
-  let best: { col: number; foundation: number } | null = null;
+export type AutoStep =
+  | { kind: "tableau"; col: number; foundation: number }
+  | { kind: "waste"; foundation: number }
+  | { kind: "draw" };
+
+/** Next auto-complete step: the lowest-rank card that can go to a foundation
+ * (tableau tops or the waste top), otherwise draw/recycle the stock. */
+export function nextAutoStep(board: Board): AutoStep | null {
+  if (isWon(board)) return null;
+  let best: AutoStep | null = null;
   let bestRank = Infinity;
-  for (let col = 0; col < board.tableau.length; col++) {
-    const column = board.tableau[col];
-    const top = column[column.length - 1];
-    if (!top || top.rank >= bestRank) continue;
-    const foundation = foundationIndex(top.suit);
-    if (!canPlaceOnFoundation(top, board.foundations[foundation])) continue;
-    best = { col, foundation };
-    bestRank = top.rank;
-  }
-  return best;
+  const consider = (card: Card | undefined, step: (foundation: number) => AutoStep) => {
+    if (!card || card.rank >= bestRank) return;
+    const foundation = foundationIndex(card.suit);
+    if (!canPlaceOnFoundation(card, board.foundations[foundation])) return;
+    best = step(foundation);
+    bestRank = card.rank;
+  };
+  board.tableau.forEach((column, col) => consider(column[column.length - 1], (foundation) => ({ kind: "tableau", col, foundation })));
+  consider(board.waste[board.waste.length - 1], (foundation) => ({ kind: "waste", foundation }));
+  if (best) return best;
+  return board.stock.length > 0 || board.waste.length > 0 ? { kind: "draw" } : null;
 }
