@@ -14,6 +14,7 @@ import {
   DPAD_Y,
   BUTTON_X,
   BUTTON_Y,
+  HUD_ROW_Y,
   PLAYFIELD_X,
   PLAYFIELD_Y,
   PLAYFIELD_WIDTH,
@@ -154,24 +155,26 @@ export class GameScene extends Phaser.Scene {
   private drawHeader(): void {
     const boxCenterX = PLAYFIELD_X + PLAYFIELD_WIDTH / 2;
     this.add
-      .text(boxCenterX, 32, `Level ${this.levelIndex + 1}/${LEVEL_COUNT}`, {
+      .text(boxCenterX, HUD_ROW_Y, `Level ${this.levelIndex + 1}/${LEVEL_COUNT}`, {
         fontFamily: FONT_FAMILY,
-        fontSize: "8px",
+        fontSize: "9px",
         color: "#545a41",
       })
       .setOrigin(0.5);
-    this.scoreText = this.add.text(PLAYFIELD_X, 48, `Score: ${this.score}`, {
-      fontFamily: FONT_FAMILY,
-      fontSize: "9px",
-      color: "#16170f",
-    });
-    this.livesText = this.add
-      .text(PLAYFIELD_X + PLAYFIELD_WIDTH, 48, `Lives: ${this.lives}`, {
+    this.scoreText = this.add
+      .text(PLAYFIELD_X, HUD_ROW_Y, `Score: ${this.score}`, {
         fontFamily: FONT_FAMILY,
         fontSize: "9px",
         color: "#16170f",
       })
-      .setOrigin(1, 0);
+      .setOrigin(0, 0.5);
+    this.livesText = this.add
+      .text(PLAYFIELD_X + PLAYFIELD_WIDTH, HUD_ROW_Y, `Lives: ${this.lives}`, {
+        fontFamily: FONT_FAMILY,
+        fontSize: "9px",
+        color: "#16170f",
+      })
+      .setOrigin(1, 0.5);
     this.add
       .rectangle(boxCenterX, PLAYFIELD_Y + PLAYFIELD_HEIGHT / 2, PLAYFIELD_WIDTH + 4, PLAYFIELD_HEIGHT + 4, 0x000000, 0)
       .setStrokeStyle(2, APP_COLORS.ACCENT);

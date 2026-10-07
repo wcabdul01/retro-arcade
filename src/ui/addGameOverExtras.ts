@@ -1,6 +1,8 @@
 import Phaser from "phaser";
 import { Capacitor } from "@capacitor/core";
 import { Share } from "@capacitor/share";
+import { Directory, Filesystem } from "@capacitor/filesystem";
+import { renderShareCard } from "./shareCard";
 import { GAME_WIDTH } from "../config/AppConfig";
 import { GAMES, type GameId } from "../hub/gameRegistry";
 import { createButton } from "./createButton";
@@ -15,9 +17,29 @@ function canShare(): boolean {
   return Capacitor.isNativePlatform() || typeof navigator.share === "function";
 }
 
+// Shares a score-card picture plus the store link. Falls back to text-only if
+// the image can't be made or attached; a dismissed share sheet also throws,
+// which is fine to ignore.
 async function shareScore(gameTitle: string, score: number): Promise<void> {
   const text = `I scored ${score} in ${gameTitle} on Retro Arcade! Can you beat it?`;
   const url = storePageUrl();
+  const message = `${text}\n${url}`;
+  try {
+    const png = await renderShareCard(gameTitle, score);
+    if (Capacitor.isNativePlatform()) {
+      const file = await Filesystem.writeFile({ path: "retro-arcade-score.png", data: png, directory: Directory.Cache });
+      await Share.share({ title: "Retro Arcade", text: message, files: [file.uri], dialogTitle: "Share your score" });
+      return;
+    }
+    const blob = await (await fetch(`data:image/png;base64,${png}`)).blob();
+    const image = new File([blob], "retro-arcade-score.png", { type: "image/png" });
+    if (navigator.canShare?.({ files: [image] })) {
+      await navigator.share({ title: "Retro Arcade", text: message, files: [image] });
+      return;
+    }
+  } catch (err) {
+    if ((err as Error)?.name === "AbortError" || /cancel/i.test(String(err))) return;
+  }
   try {
     if (Capacitor.isNativePlatform()) {
       await Share.share({ title: "Retro Arcade", text, url, dialogTitle: "Share your score" });

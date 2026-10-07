@@ -7,6 +7,9 @@ export const PLAYFIELD_WIDTH = 420;
 export const PLAYFIELD_HEIGHT = 684;
 export const PLAYFIELD_RIGHT = PLAYFIELD_X + PLAYFIELD_WIDTH;
 export const PLAYFIELD_BOTTOM = PLAYFIELD_Y + PLAYFIELD_HEIGHT;
+// Score / level / lives row: below the help + pause buttons (y 20-52),
+// above the playfield frame.
+export const HUD_ROW_Y = 70;
 
 export const DPAD_X = 130;
 export const DPAD_Y = PLAYFIELD_BOTTOM + 158;

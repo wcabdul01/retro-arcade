@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { GAME_WIDTH, FONT_FAMILY, COLORS as APP_COLORS, CONTENT_MARGIN } from "../../../config/AppConfig";
+import { FONT_FAMILY, COLORS as APP_COLORS } from "../../../config/AppConfig";
 import { FLEET, PLAYER, BULLET, SI_COLORS, GAMEPLAY } from "../config";
 import { Player } from "../entities/Player";
 import { Invader } from "../entities/Invader";
@@ -9,6 +9,7 @@ import { sfx } from "../../../systems/SoundManager";
 import { createDPad } from "../../../ui/createDPad";
 import { createRoundButton } from "../../../ui/createRoundButton";
 import {
+  HUD_ROW_Y,
   PLAYFIELD_X,
   PLAYFIELD_Y,
   PLAYFIELD_WIDTH,
@@ -116,14 +117,12 @@ export class GameScene extends Phaser.Scene {
   }
 
   private drawHeader(): void {
-    this.scoreText = this.add.text(CONTENT_MARGIN, CONTENT_MARGIN, `Score: ${this.score}`, {
-      fontFamily: FONT_FAMILY,
-      fontSize: "9px",
-      color: "#16170f",
-    });
+    this.scoreText = this.add
+      .text(PLAYFIELD_X, HUD_ROW_Y, `Score: ${this.score}`, { fontFamily: FONT_FAMILY, fontSize: "9px", color: "#16170f" })
+      .setOrigin(0, 0.5);
     this.livesText = this.add
-      .text(GAME_WIDTH - CONTENT_MARGIN, 56, `Lives: ${this.lives}`, { fontFamily: FONT_FAMILY, fontSize: "9px", color: "#16170f" })
-      .setOrigin(1, 0);
+      .text(PLAYFIELD_X + PLAYFIELD_WIDTH, HUD_ROW_Y, `Lives: ${this.lives}`, { fontFamily: FONT_FAMILY, fontSize: "9px", color: "#16170f" })
+      .setOrigin(1, 0.5);
   }
 
   private drawFrame(): void {

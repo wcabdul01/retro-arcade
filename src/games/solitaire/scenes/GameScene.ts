@@ -6,10 +6,12 @@ import {
   Card,
   SUITS,
   dealBoard,
+  canAutoComplete,
   canPlaceOnFoundation,
   canPlaceOnTableau,
   isRedGroup,
   isWon,
+  nextAutoMove,
   suitSymbol,
 } from "../engine";
 import { CardView } from "../entities/CardView";
@@ -41,6 +43,7 @@ const FOUNDATION_COLS = [3, 4, 5, 6];
 const START_HINTS = 5;
 const START_UNDOS = 5;
 const AD_REPLENISH_AMOUNT = 3;
+const AUTO_MOVE_MS = 110;
 
 function colX(i: number): number {
   return MARGIN_X + i * (CARD.WIDTH + CARD.GAP) + CARD.WIDTH / 2;
@@ -86,6 +89,8 @@ export class GameScene extends Phaser.Scene {
   private hintButtonText!: Phaser.GameObjects.Text;
   private undoButtonText!: Phaser.GameObjects.Text;
   private adRequestInProgress = false;
+  private autoButton!: Phaser.GameObjects.Container;
+  private autoRunning = false;
 
   constructor() {
     super("Solitaire.Game");
@@ -102,6 +107,7 @@ export class GameScene extends Phaser.Scene {
     this.hintsLeft = START_HINTS;
     this.undosLeft = START_UNDOS;
     this.adRequestInProgress = false;
+    this.autoRunning = false;
   }
 
   create(): void {
@@ -170,6 +176,55 @@ export class GameScene extends Phaser.Scene {
     this.hintButtonText = this.makeSmallButton(centerX - btnW / 2 - gap / 2, rowY, btnW, btnH, "hint", () => this.useHint());
     this.undoButtonText = this.makeSmallButton(centerX + btnW / 2 + gap / 2, rowY, btnW, btnH, "undo", () => this.undo());
     this.updateResourceText();
+    this.buildAutoButton(centerX, rowY, btnW * 2 + gap, btnH);
+  }
+
+  // Covers the hint/undo row once the deal is solved (they're no use then),
+  // so it never overlaps a long tableau column.
+  private buildAutoButton(x: number, y: number, w: number, h: number): void {
+    const bg = this.add
+      .rectangle(0, 0, w, h, GB.DARK)
+      .setStrokeStyle(3, GB.DARKEST)
+      .setInteractive({ useHandCursor: true });
+    const label = this.add
+      .text(0, 0, "AUTO COMPLETE", { fontFamily: FONT_FAMILY, fontSize: "14px", color: "#9ba17c" })
+      .setOrigin(0.5);
+    bg.on("pointerover", () => bg.setFillStyle(GB.DARKEST));
+    bg.on("pointerout", () => bg.setFillStyle(GB.DARK));
+    bg.on("pointerdown", () => {
+      sfx.select();
+      this.startAutoComplete();
+    });
+    this.autoButton = this.add.container(x, y, [bg, label]).setDepth(1000).setVisible(false);
+    this.updateAutoButton();
+  }
+
+  private updateAutoButton(): void {
+    if (!this.autoButton) return;
+    this.autoButton.setVisible(!this.ended && !this.autoRunning && canAutoComplete(this.board));
+  }
+
+  private startAutoComplete(): void {
+    if (this.ended || this.autoRunning || !canAutoComplete(this.board)) return;
+    this.autoRunning = true;
+    this.clearSelection();
+    this.updateAutoButton();
+    const timer = this.time.addEvent({
+      delay: AUTO_MOVE_MS,
+      loop: true,
+      callback: () => {
+        const move = this.ended ? null : nextAutoMove(this.board);
+        if (!move) {
+          timer.remove();
+          this.autoRunning = false;
+          this.updateAutoButton();
+          return;
+        }
+        const column = this.board.tableau[move.col];
+        this.selection = { source: "tableau", col: move.col, cards: [column[column.length - 1]] };
+        this.tryMoveSelectionToFoundation(move.foundation);
+      },
+    });
   }
 
   private makeSmallButton(
@@ -280,6 +335,7 @@ export class GameScene extends Phaser.Scene {
         y += card.faceUp ? CARD.STACK_OFFSET_FACEUP : CARD.STACK_OFFSET_FACEDOWN;
       });
     });
+    this.updateAutoButton();
   }
 
   private locateCard(id: number): { pile: "tableau" | "waste" | "foundation" | "stock"; col: number; index: number } | null {
@@ -299,7 +355,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private handleCardTap(id: number): void {
-    if (this.ended) return;
+    if (this.ended || this.autoRunning) return;
     const loc = this.locateCard(id);
     if (!loc) return;
 
@@ -423,7 +479,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private drawFromStock(): void {
-    if (this.ended) return;
+    if (this.ended || this.autoRunning) return;
     this.clearSelection();
     if (this.board.stock.length > 0) {
       const card = this.board.stock.pop();
@@ -448,7 +504,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private undo(): void {
-    if (this.ended) return;
+    if (this.ended || this.autoRunning) return;
     if (this.undosLeft <= 0) {
       this.promptForAd("undo");
       return;
@@ -576,7 +632,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private useHint(): void {
-    if (this.ended) return;
+    if (this.ended || this.autoRunning) return;
     if (this.hintsLeft <= 0) {
       this.promptForAd("hint");
       return;

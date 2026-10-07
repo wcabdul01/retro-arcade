@@ -90,3 +90,32 @@ export function foundationIndex(suit: Suit): number {
 export function isWon(board: Board): boolean {
   return board.foundations.every((f) => f.length === 13);
 }
+
+/** The stock and waste are used up and every tableau card is face up, so the
+ * deal can no longer be lost: what's left is moving cards to the foundations.
+ * (The lowest remaining card always sits on top of its column, because face-up
+ * runs descend, so a foundation move is always available until the win.) */
+export function canAutoComplete(board: Board): boolean {
+  return (
+    !isWon(board) &&
+    board.stock.length === 0 &&
+    board.waste.length === 0 &&
+    board.tableau.every((column) => column.every((card) => card.faceUp))
+  );
+}
+
+/** Tableau column whose top card can go to a foundation, lowest rank first. */
+export function nextAutoMove(board: Board): { col: number; foundation: number } | null {
+  let best: { col: number; foundation: number } | null = null;
+  let bestRank = Infinity;
+  for (let col = 0; col < board.tableau.length; col++) {
+    const column = board.tableau[col];
+    const top = column[column.length - 1];
+    if (!top || top.rank >= bestRank) continue;
+    const foundation = foundationIndex(top.suit);
+    if (!canPlaceOnFoundation(top, board.foundations[foundation])) continue;
+    best = { col, foundation };
+    bestRank = top.rank;
+  }
+  return best;
+}
