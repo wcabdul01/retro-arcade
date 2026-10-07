@@ -1,0 +1,56 @@
+# Remove Ads ($9.99) + lobby Settings + Play Games cloud save: plan
+
+Decided 2026-10-08. Ships together with the unsubmitted 1.4 changes (hold 1.4).
+
+## Decisions (user)
+- Price **$9.99**, one-time (non-consumable), product ID **`remove_ads`**.
+- Google Play Billing on the Play build, Huawei IAP on the Huawei build.
+  Each build must contain only its own store's billing SDK.
+- After purchase: no banner, no full-screen ads, **and no "Watch Ad"
+  options at all** (hide continue-by-ad buttons; hint/undo stop at 0).
+- Lobby gets **SETTINGS** and **REMOVE ADS** buttons (Settings currently
+  only opens from the pause menu).
+- Progress saved to **Google Play Games** (Saved Games). Huawei: device only.
+
+## User setup checklist
+Google Play (Play Console → Retro Arcade):
+1. [ ] Monetize with Play → payments profile / merchant account.
+2. [ ] Products → In-app products → create `remove_ads`, "Remove Ads",
+   $9.99 USD, Activate (needs a billing build uploaded to Internal testing first).
+3. [ ] Settings → License testing → add your Gmail.
+4. [ ] Grow users → Play Games Services → setup (new project), Android
+   credential (OAuth consent screen), turn **Saved Games On**, send the
+   numeric Project ID.
+
+Huawei (AppGallery Connect → Retro Arcade):
+5. [ ] Earn → In-App Purchases → enable (merchant service, bank/identity).
+6. [ ] Products → add Non-consumable `remove_ads`, $9.99, activate.
+7. [ ] Project settings → download `agconnect-services.json`, send it.
+8. [ ] Users and permissions → Sandbox testing → add your Huawei ID.
+
+## Implementation plan (code)
+- Native Capacitor plugin `Billing`, same pattern as `LevelPlayPlugin`:
+  - Play: `android/app/src/play/java/.../BillingPlugin.java`, Play Billing
+    Library 8+ (v8 required for updates since 31 Aug 2026; latest 9.1.0).
+  - Huawei: `android/app/src/huawei/java/.../BillingPlugin.java`,
+    `com.huawei.hms:iap` 6.16.x + AGConnect plugin + huawei maven repo.
+  - Choose source set + deps with a gradle property (`-Pstore=huawei` for
+    the Huawei APK), so the Play AAB never contains HMS IAP.
+  - Methods: `getProduct` (localized price), `purchase`, `restore`
+    (query owned purchases at boot; acknowledge Play purchases).
+- `src/systems/Purchases.ts`: replace the free placeholder with the real
+  flow; boot-time restore sets `SaveData.noAdsPurchased`.
+- `AdsManager`: expose `isAdFree`; game-over scenes hide "Watch Ad:
+  Continue"; Memory Match / Solitaire / Sudoku hint/undo show 0 with no AD.
+- Hub: SETTINGS + REMOVE ADS row above EXIT; Settings: RESTORE PURCHASES.
+- Play Games: `PlayGamesPlugin` (play source set only), `play-services-games-v2`,
+  Snapshots open/read/write; APP_ID from a committed config property, off
+  until filled. Merge cloud + local: max high scores, max progress levels,
+  noAds = either true.
+- Remove/replace `OfflineBlockScene` "REMOVE ADS - $10 (TEST MODE)" placeholder.
+- Data safety / privacy policy: add purchase + Play Games data if needed.
+
+Sources: Play Billing deprecation FAQ
+(https://developer.android.com/google/play/billing/deprecation-faq),
+HMS IAP maven (https://mvnrepository.com/artifact/com.huawei.hms/iap),
+Play Games v2 maven (https://mvnrepository.com/artifact/com.google.android.gms/play-services-games-v2).
