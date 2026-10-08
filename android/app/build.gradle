@@ -46,7 +46,7 @@ def appGalleryAppId = "119204471"
 // Setup and management > Configuration. While it's blank the Play Games SDK
 // and PlayGamesPlugin.java (src/playgames/java) are left out and the game
 // saves on the device only, as before.
-def playGamesProjectId = ""
+def playGamesProjectId = "430095056932"
 def playGamesEnabled = !isHuawei && !playGamesProjectId.isEmpty()
 
 android {
@@ -61,7 +61,7 @@ android {
         applicationId "com.retroarcade.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 6
+        versionCode 7
         versionName "1.4"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders = [hmsAppId: isHuawei ? "appid=${appGalleryAppId}" : ""]

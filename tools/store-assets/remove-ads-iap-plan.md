@@ -42,8 +42,13 @@ Builds:
   copy to android/app/build/outputs/huawei/retro-arcade-1.4-huawei.apk, then `npm run cap:sync`
   again (HMS IAP 6.16.6.305, no Play Billing). App ID 119204471 is in the manifest, so
   no agconnect-services.json is needed.
-- Play Games cloud save: paste the numeric Project ID into
-  `playGamesProjectId` in android/app/build.gradle and rebuild. Blank = device-only saves.
+- Play Games cloud save: Project ID 430095056932 is set in android/app/build.gradle
+  (Cloud project retro-arcade-games-511002, Saved Games on, consent screen External).
+  Two Android credentials: Play app-signing SHA-1 (18:DA:BC:...:8B:D3, used for new
+  installs) and upload-key SHA-1 (8B:FA:B7:...:B3:BF, for adb test builds).
+  Verified on phone 2026-10-08: sign-in, snapshot load and save OK.
+  The Play Games project is still a Draft: publish it with the 1.4 release.
+- Version is now 1.4 (code 7); code 6 was used by the first Internal testing upload.
 
 Design notes:
 - The purchase itself is not stored in the cloud save: the store is the record
