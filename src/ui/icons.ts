@@ -39,3 +39,19 @@ export function drawUndoIcon(scene: Phaser.Scene, x: number, y: number, size = 1
   );
   return g;
 }
+
+export function drawGearIcon(scene: Phaser.Scene, x: number, y: number, size = 20): Phaser.GameObjects.Graphics {
+  const g = scene.add.graphics({ x, y });
+  const ring = size * 0.3;
+  const toothLen = size * 0.2;
+  // Eight square-ended teeth around a hollow ring, so the button colour shows
+  // through the middle on hover too.
+  g.lineStyle(Math.max(3, size * 0.2), ICON_COLOR, 1);
+  for (let i = 0; i < 8; i++) {
+    const a = (Math.PI / 4) * i;
+    g.lineBetween(Math.cos(a) * ring, Math.sin(a) * ring, Math.cos(a) * (ring + toothLen), Math.sin(a) * (ring + toothLen));
+  }
+  g.lineStyle(Math.max(3, size * 0.18), ICON_COLOR, 1);
+  g.strokeCircle(0, 0, ring);
+  return g;
+}

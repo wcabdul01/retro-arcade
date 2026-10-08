@@ -29,8 +29,9 @@ Huawei (AppGallery Connect → Retro Arcade):
 8. [ ] Users and permissions → Sandbox testing → add your Huawei ID.
 
 ## Status (2026-10-08): code done, waiting on store setup
-Built and phone-tested (Play build): lobby SETTINGS + REMOVE ADS row,
-Settings RESTORE PURCHASES ("NO PURCHASES FOUND" from Play), and REMOVE ADS
+Built and phone-tested (Play build): gear button (top-right of the lobby) opens Settings,
+which holds REMOVE ADS (price shown when known) and
+RESTORE PURCHASES ("NO PURCHASES FOUND" from Play); REMOVE ADS
 reaches Play and reports "This item isn't available right now" until
 `remove_ads` exists in Play Console. Version stays 1.4 (code 6), unsubmitted.
 

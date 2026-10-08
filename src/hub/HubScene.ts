@@ -1,13 +1,13 @@
 import Phaser from "phaser";
-import { GB, COLORS, FONT_FAMILY, GAME_WIDTH, GAME_HEIGHT } from "../config/AppConfig";
+import { GB, COLORS, FONT_FAMILY, GAME_WIDTH, GAME_HEIGHT, CONTENT_MARGIN } from "../config/AppConfig";
 import { GAMES } from "./gameRegistry";
 import type { SaveData } from "../platform";
 import { sfx } from "../systems/SoundManager";
 import { AdsManager } from "../systems/AdsManager";
 import { EventBus } from "../systems/EventBus";
-import { AD_FREE_CHANGED, Purchases } from "../systems/Purchases";
 import { SAVE_DATA_CHANGED } from "../systems/CloudSave";
 import { createButton } from "../ui/createButton";
+import { drawGearIcon } from "../ui/icons";
 import { canExitApp, exitApp } from "../platform/exitApp";
 
 const TILE_WIDTH = 210;
@@ -15,31 +15,26 @@ const TILE_HEIGHT = 96;
 const GAP = 12;
 const COLS = 2;
 const EXIT_BUTTON_HEIGHT = 56;
-const ROW_BUTTON_HEIGHT = 56;
+const SETTINGS_BUTTON_SIZE = 40;
 
 // Layout block is authored top-anchored (title -> subtitle -> tile grid ->
-// SETTINGS / REMOVE ADS row -> exit button), then shifted as a whole so it
-// sits vertically centered in the canvas instead of hugging the top with
-// empty space below.
+// exit button), then shifted as a whole so it sits vertically centered in
+// the canvas instead of hugging the top with empty space below. The settings
+// gear sits in the top-right corner, where games put their pause button.
 const TITLE_Y = 66;
 const TITLE_BLOCK_HEIGHT = 60; // two 22px lines + line spacing
 const SUBTITLE_Y = 122;
 const GRID_TOP = 150;
 const GRID_ROWS = Math.ceil(GAMES.length / COLS);
 const GRID_BOTTOM = GRID_TOP + GRID_ROWS * (TILE_HEIGHT + GAP) - GAP;
-const ROW_GAP = 24;
-const ROW_Y = GRID_BOTTOM + ROW_GAP + ROW_BUTTON_HEIGHT / 2;
-const EXIT_GAP = 12;
-const EXIT_Y = ROW_Y + ROW_BUTTON_HEIGHT / 2 + EXIT_GAP + EXIT_BUTTON_HEIGHT / 2;
+const EXIT_GAP = 34;
+const EXIT_Y = GRID_BOTTOM + EXIT_GAP + EXIT_BUTTON_HEIGHT / 2;
 
 const CONTENT_TOP = TITLE_Y - TITLE_BLOCK_HEIGHT / 2;
 const CONTENT_BOTTOM = EXIT_Y + EXIT_BUTTON_HEIGHT / 2;
 const OFFSET_Y = (GAME_HEIGHT - (CONTENT_BOTTOM - CONTENT_TOP)) / 2 - CONTENT_TOP;
 
 export class HubScene extends Phaser.Scene {
-  private buying = false;
-  private messageText!: Phaser.GameObjects.Text;
-
   constructor() {
     super("Hub");
   }
@@ -86,16 +81,12 @@ export class HubScene extends Phaser.Scene {
       });
     });
 
-    this.createSettingsRow(startX, ROW_Y + OFFSET_Y);
+    this.createSettingsButton();
 
-    // Redraw when a purchase/restore/refund or the cloud save changes what's shown.
+    // Redraw when the cloud save brings back high scores.
     const redraw = () => this.scene.restart();
-    EventBus.on(AD_FREE_CHANGED, redraw);
     EventBus.on(SAVE_DATA_CHANGED, redraw);
-    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
-      EventBus.off(AD_FREE_CHANGED, redraw);
-      EventBus.off(SAVE_DATA_CHANGED, redraw);
-    });
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => EventBus.off(SAVE_DATA_CHANGED, redraw));
 
     if (canExitApp()) {
       createButton(this, GAME_WIDTH / 2, EXIT_Y + OFFSET_Y, "EXIT", () => {
@@ -106,51 +97,21 @@ export class HubScene extends Phaser.Scene {
     }
   }
 
-  /** SETTINGS and REMOVE ADS side by side under the grid; SETTINGS alone
-   * (full width) once ads are removed or where there's nothing to buy. */
-  private createSettingsRow(startX: number, y: number): void {
-    this.buying = false;
-    const openSettings = () => this.scene.launch("Settings");
-    this.messageText = this.add
-      .text(GAME_WIDTH / 2, y - ROW_BUTTON_HEIGHT / 2 - ROW_GAP / 2, "", {
-        fontFamily: FONT_FAMILY,
-        fontSize: "8px",
-        color: "#16170f",
-        align: "center",
-      })
-      .setOrigin(0.5);
-
-    if (!Purchases.isSupported || AdsManager.isAdFree) {
-      createButton(this, GAME_WIDTH / 2, y, "SETTINGS", openSettings);
-      return;
-    }
-
-    const opts = { width: TILE_WIDTH, height: ROW_BUTTON_HEIGHT };
-    createButton(this, startX, y, "SETTINGS", openSettings, opts);
-    const removeAds = createButton(this, startX + TILE_WIDTH + GAP, y, this.removeAdsLabel(), () => void this.buy(), opts);
-    const label = removeAds.getData("label") as Phaser.GameObjects.Text;
-    label.setAlign("center").setLineSpacing(6);
-    // The store price usually arrives a moment after launch.
-    if (!Purchases.priceLabel) {
-      this.time.delayedCall(2_000, () => {
-        if (label.active && !this.buying) label.setText(this.removeAdsLabel());
-      });
-    }
-  }
-
-  private removeAdsLabel(): string {
-    return Purchases.priceLabel ? `REMOVE ADS\n${Purchases.priceLabel}` : "REMOVE ADS";
-  }
-
-  private async buy(): Promise<void> {
-    if (this.buying) return;
-    this.buying = true;
-    this.messageText.setText("");
-    // Owned -> Purchases emits AD_FREE_CHANGED and the hub redraws without the button.
-    const { message } = await Purchases.buy(this.registry);
-    if (!this.scene.isActive()) return;
-    this.buying = false;
-    if (message && this.messageText.active) this.messageText.setText(message);
+  /** Gear button in the top-right corner; Settings also holds Remove Ads. */
+  private createSettingsButton(): void {
+    const x = GAME_WIDTH - CONTENT_MARGIN - SETTINGS_BUTTON_SIZE / 2;
+    const y = CONTENT_MARGIN + SETTINGS_BUTTON_SIZE / 2;
+    const bg = this.add
+      .rectangle(x, y, SETTINGS_BUTTON_SIZE, SETTINGS_BUTTON_SIZE, GB.DARK)
+      .setStrokeStyle(3, GB.DARKEST)
+      .setInteractive({ useHandCursor: true });
+    drawGearIcon(this, x, y, 24);
+    bg.on("pointerover", () => bg.setFillStyle(GB.DARKEST));
+    bg.on("pointerout", () => bg.setFillStyle(GB.DARK));
+    bg.on("pointerdown", () => {
+      sfx.select();
+      this.scene.launch("Settings");
+    });
   }
 
   private createTile(
