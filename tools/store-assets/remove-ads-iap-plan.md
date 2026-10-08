@@ -82,3 +82,19 @@ Sources: Play Billing deprecation FAQ
 (https://developer.android.com/google/play/billing/deprecation-faq),
 HMS IAP maven (https://mvnrepository.com/artifact/com.huawei.hms/iap),
 Play Games v2 maven (https://mvnrepository.com/artifact/com.google.android.gms/play-services-games-v2).
+
+## Data safety additions for 1.4 (draft, 2026-10-08)
+Keep every Unity ads answer from 1.3 (ads-levelplay.md). Add:
+
+| Data type | Collected / shared | Why | Optional? | Source |
+|---|---|---|---|---|
+| Personal info > User IDs (Play Games player ID) | Collected, not shared | App functionality | Optional (only if signed in to Play Games) | Play Games Services |
+| App activity > Other actions (high scores, level progress in Saved Games) | Collected, not shared | App functionality | Optional | Play Games Saved Games |
+| Financial info > Purchase history (Remove Ads ownership) | Collected, not shared | App functionality | Optional (only buyers) | Google Play Billing |
+| App info and performance > Diagnostics | Collected, not shared | Analytics (SDK stability) | Required | Play Games SDK (Google says it collects diagnostics automatically) |
+
+Security answers stay: encrypted in transit = Yes; users can request deletion = Yes
+(Play Games data via the Play Games profile / Google Account).
+Sources: https://developer.android.com/games/pgs/data-collection ,
+https://support.google.com/googleplay/android-developer/answer/10787469
+Privacy policy updated (docs/privacy-policy.html, effective Oct 8, 2026): commit 99cd2ee, not pushed yet.
